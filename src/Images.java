@@ -17,6 +17,7 @@ public abstract class Images {
        put( Fruit.class.getName(), "imgs/fruit3.png");
        put( Ghost.class.getName(), "imgs/ghost4.png");
        put( Blank.class.getName(), "imgs/square3.JPG");
+       put( PathCell.class.getName(), "imgs/pathCell.png");
     }};
 
     public static Image getImageFor(String symbol){

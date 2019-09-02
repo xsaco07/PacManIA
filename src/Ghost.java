@@ -1,4 +1,4 @@
-public class Ghost extends Ficha {
+public class Ghost extends Node {
 
     public Ghost (int initialPosX, int initialPosY) {
         setPosX(initialPosX);

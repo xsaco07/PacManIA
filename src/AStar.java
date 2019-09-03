@@ -39,7 +39,7 @@ public class AStar {
         return (!(gameGrid.cells[posX][posY] instanceof Block));
     }
 
-    private static boolean isInBounds(int posX, int posY) {
+    public static boolean isInBounds(int posX, int posY) {
         return (posX < (gameGrid.width) && posX >= 0)
                 &&
                 (posY < (gameGrid.height) && posY >= 0);

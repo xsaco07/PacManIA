@@ -10,6 +10,10 @@ public class MyPanel extends JPanel {
         this.cellSize = cellSize;
     }
 
+    public void setGrid(Grid grid) {
+        this.grid = grid;
+    }
+
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);

@@ -6,6 +6,8 @@ public class Grid {
     int height;
     Node pacManNode;
     ArrayList<Fruit> fruitsNodes;
+    ArrayList<Ghost> ghostsNodes;
+    ArrayList<Block> blocksNodes;
 
     public Node[][] cells;
 
@@ -15,6 +17,8 @@ public class Grid {
 
         this.cells = new Node[height][width];
         this.fruitsNodes = new ArrayList<>();
+        this.ghostsNodes = new ArrayList<>();
+        this.blocksNodes = new ArrayList<>();
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) cells[i][j] = new Blank(i, j);
@@ -27,8 +31,18 @@ public class Grid {
     public void put(Node node){
         int posX = node.getPosX(), posY = node.getPosY();
         cells[posX][posY] = node;
-        if (node instanceof Fruit) {
-            fruitsNodes.add((Fruit) node);
+        if (node instanceof Fruit) fruitsNodes.add((Fruit) node);
+        else if (node instanceof Ghost) ghostsNodes.add((Ghost) node);
+        else if (node instanceof Block) blocksNodes.add((Block) node);
+    }
+
+    public void drawCells() {
+        // Paint pacMan
+        cells[pacManNode.getPosX()][pacManNode.getPosY()] = pacManNode;
+        // Paint ghosts
+        for (Ghost ghost : ghostsNodes) {
+            int currentPosX = ghost.getPosX(), currentPosY = ghost.getPosY();
+            cells[currentPosX][currentPosY] = ghost;
         }
     }
 

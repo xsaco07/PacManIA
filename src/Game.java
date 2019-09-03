@@ -21,44 +21,49 @@ public class Game {
         ghostsSocre = 0;
     }
 
-    public void startGame() {
+    public void findEntirePath() {
 
         setGridFruitsQueue();
+        int gridFruitsSize = gridFruits.size();
 
-        for (int i = 0; i < gridFruits.size(); i++) {
+        for (int i = 0; i < gridFruitsSize; i++) {
 
-            Fruit closestFruit = gridFruits.peek();
+            //sleep(2);
+
+            Fruit closestFruit = gridFruits.poll();
             AStar.setGrid(gameGrid);
             AStar.findPath(gameGrid.pacManNode, closestFruit);
 
             if (AStar.finalPath != null) {
-//                Node pacManNode = gameGrid.pacManNode;
-//                int pacManNodePosX = pacManNode.getPosX();
-//                int pacManNodePosY = pacManNode.getPosY();
-//
-//                pacManNode.setPosX(closestFruit.getPosX());
-//                pacManNode.setPosY(closestFruit.getPosY());
-//
-//                gameGrid.cells[pacManNodePosY][pacManNodePosX] = new Blank(pacManNodePosY, pacManNodePosX);
-//                gameGrid.cells[closestFruit.getPosY()][closestFruit.getPosX()] = pacManNode;
-//                gameGrid.pacManNode = pacManNode;
-                repaintFrame();
-            }
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                Node pacManNode = gameGrid.pacManNode;
+                int pacManNodePosX = pacManNode.getPosX();
+                int pacManNodePosY = pacManNode.getPosY();
+
+                //gameGrid.cells[pacManNodePosX][pacManNodePosY] = new Blank(pacManNodePosX, pacManNodePosY);
+                repaintGrid();
+                pacManNode.setPosX(closestFruit.getPosX());
+                pacManNode.setPosY(closestFruit.getPosY());
+                gameGrid.drawCells();
             }
         }
     }
 
-    private void repaintFrame() {
-//        for (int i = 0; i < AStar.finalPath.size()-1; i++) {
-//            int posX = AStar.finalPath.get(i).getValue();
-//            int posY = AStar.finalPath.get(i).getKey();
-//            gameGrid.cells[posY][posX] = new PathCell(posX, posY);
-//        }
-//        frame.repaint();
+    private void sleep() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void repaintGrid() {
+        for (int i = 0; i < AStar.finalPath.size()-1; i++) {
+            int posX = AStar.finalPath.get(i).getValue();
+            int posY = AStar.finalPath.get(i).getKey();
+            gameGrid.cells[posY][posX] = new PathCell(posX, posY);
+            frame.repaint();
+            sleep();
+        }
     }
 
     public boolean checkForWinner(Grid grid) {
@@ -79,7 +84,14 @@ public class Game {
             currentFruit.gCost = AStar.getDistance(currentStartNode, currentFruit);
             gridFruits.add(currentFruit);
         }
+    }
 
+    private void moveGhosts() {
+        for (Ghost ghost : gameGrid.ghostsNodes) {
+            do {
+                ghost.move();
+            }while (!AStar.isInBounds(ghost.getPosX(), ghost.getPosY()));
+        }
     }
 
 }

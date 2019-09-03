@@ -18,13 +18,9 @@ public class Ghost extends Node {
         }
     }
 
-    private void up() {
-        setPosX(getPosX() - 1);
-    }
+    private void up() { setPosX(getPosX() - 1); }
 
-    private void down() {
-        setPosX(getPosX() + 1);
-    }
+    private void down() { setPosX(getPosX() + 1); }
 
     private void left() {
         setPosY(getPosY() - 1);

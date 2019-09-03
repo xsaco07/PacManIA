@@ -9,30 +9,30 @@ public class Main {
         int rows = 10, cols = 10;
         int cellSize = 60;
 
-        Grid grid = new Grid(rows, cols, new PacMan(1, 0));
+        Grid grid = new Grid(rows, cols, new PacMan(0, 0));
 
         initializeGUI(grid, rows, cols, cellSize);
 
-//        Game game = new Game(grid, frame);
-//        game.startGame();
+        Game game = new Game(grid, frame);
+        game.findEntirePath();
 
-        AStar.setGrid(grid);
-        AStar.findPath(grid.pacManNode, grid.fruitsNodes.get(1));
+//        AStar.setGrid(grid);
+//        AStar.findPath(grid.pacManNode, grid.fruitsNodes.get(2));
 
-        for (int i = 0; i < AStar.finalPath.size()-1; i++) {
-            int posX = AStar.finalPath.get(i).getValue();
-            int posY = AStar.finalPath.get(i).getKey();
-            grid.cells[posY][posX] = new PathCell(posX, posY);
-        }
-
-        frame.repaint();
+//        for (int i = 0; i < AStar.finalPath.size()-1; i++) {
+//            int posX = AStar.finalPath.get(i).getValue();
+//            int posY = AStar.finalPath.get(i).getKey();
+//            grid.cells[posY][posX] = new PathCell(posX, posY);
+//        }
+//
+//        frame.repaint();
 
     }
 
     private static void initializeGUI(Grid grid, int rows, int cols, int cellSize) {
         grid.put(new Fruit(7, 7));
         grid.put(new Fruit(2, 8));
-        grid.put(new Fruit(9, 1));
+        grid.put(new Fruit(0, 7));
 
         for (int i = 0; i < 7; i++) {
             grid.put(new Block(3, i));
@@ -41,7 +41,7 @@ public class Main {
             grid.put(new Block(9, 9 - i));
         }
 
-        grid.put(new Ghost(5, 2));
+        grid.put(new Ghost(2, 2));
         grid.put(new Ghost(9, 2));
 
         frame = new JFrame("PacManIA");

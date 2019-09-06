@@ -15,19 +15,19 @@ public class AStar {
         int currentNodePosX = currentNode.getPosX();
         int currentNodePosY = currentNode.getPosY();
 
-        // Can move ? Add that one
+        // Can moveOverGrid ? Add that one
         if (isInBounds(currentNodePosX+1, currentNodePosY) && isNotBlocked(currentNodePosX + 1, currentNodePosY)) {
             children.add(gameGrid.cells[currentNodePosX+1][currentNodePosY]);
         }
-        // Can move ? Add that one
+        // Can moveOverGrid ? Add that one
         if (isInBounds(currentNodePosX, currentNodePosY+1) && isNotBlocked(currentNodePosX, currentNodePosY + 1)) {
             children.add(gameGrid.cells[currentNodePosX][currentNodePosY+1]);
         }
-        // Can move ? Add that one
+        // Can moveOverGrid ? Add that one
         if (isInBounds(currentNodePosX-1, currentNodePosY) && isNotBlocked(currentNodePosX - 1, currentNodePosY)) {
             children.add(gameGrid.cells[currentNodePosX-1][currentNodePosY]);
         }
-        // Can move ? Add that one
+        // Can moveOverGrid ? Add that one
         if (isInBounds(currentNodePosX, currentNodePosY-1) && isNotBlocked(currentNodePosX, currentNodePosY - 1)) {
             children.add(gameGrid.cells[currentNodePosX][currentNodePosY-1]);
         }
@@ -36,7 +36,7 @@ public class AStar {
     }
 
     private static boolean isNotBlocked(int posX, int posY) {
-        return (!(gameGrid.cells[posX][posY] instanceof Block));
+        return (!(gameGrid.cells[posX][posY] instanceof Block) && !(gameGrid.cells[posX][posY] instanceof Ghost));
     }
 
     public static boolean isInBounds(int posX, int posY) {
@@ -66,12 +66,12 @@ public class AStar {
             visitedNodes.add(current);
 
             if(reachGoal(current, goalNode)) {
-                System.out.println("Path Found!");
+//                System.out.println("Path Found!");
                 finalPath = buildPath(startNode, goalNode);
                 return;
             }
 
-            for(Node neighbor : generateChildren(current)) { // Generate only valid states
+            for(Node neighbor : generateChildren(current)) { // Generates only valid states
 
                 if(!visitedNodes.contains(neighbor)) {
 
@@ -98,7 +98,6 @@ public class AStar {
     private static ArrayList<Pair<Integer, Integer>> buildPath(Node startNode, Node endNode) {
 
         Node iterator = endNode;
-
         ArrayList<Pair<Integer, Integer>> pathPositions = new ArrayList<>();
         Pair<Integer, Integer> currentPositions;
 

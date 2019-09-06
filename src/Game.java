@@ -2,95 +2,141 @@ import javafx.util.Pair;
 
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.PriorityQueue;
 
 public class Game {
 
     private int pacManScore;
-    private int ghostsSocre;
+    private int ghostsScore;
     private Grid gameGrid;
     private JFrame frame;
-    public ArrayList<Pair<Integer, Integer>> finalPath;
-    private PriorityQueue<Fruit> gridFruits;
+    private ArrayList<Fruit> gridFruits;
+    private ArrayList<Pair<Integer, Integer>> completePath;
 
     public Game(Grid gameGrid, JFrame frame) {
         this.gameGrid = gameGrid;
         this.frame = frame;
-        gridFruits = new PriorityQueue<>();
+        completePath = new ArrayList<>();
         pacManScore = 0;
-        ghostsSocre = 0;
+        ghostsScore = 0;
+    }
+
+    public void play() {
+        while (!winnerFound(gameGrid)) {
+            sleep();
+            findEntirePath();
+            //cleanPath();
+            //moveGhosts();
+            //movePacMan();
+            gameGrid.drawCells();
+            frame.repaint();
+        }
+    }
+
+    private void movePacMan() {
     }
 
     public void findEntirePath() {
 
-        setGridFruitsQueue();
+        // Restore the fruits to search them on each iteration
+        gridFruits = new ArrayList<>(gameGrid.fruitsNodes);
+
         int gridFruitsSize = gridFruits.size();
+
+        // Copy the original pac man to find all the path traversing all fruits
+        Node pacManCopy = new PacMan((PacMan) gameGrid.pacManNode);
 
         for (int i = 0; i < gridFruitsSize; i++) {
 
-            //sleep(2);
-
-            Fruit closestFruit = gridFruits.poll();
+            Fruit closestFruit = getClosestFruit(pacManCopy);
             AStar.setGrid(gameGrid);
-            AStar.findPath(gameGrid.pacManNode, closestFruit);
+            AStar.findPath(pacManCopy, closestFruit);
 
             if (AStar.finalPath != null) {
-                Node pacManNode = gameGrid.pacManNode;
-                int pacManNodePosX = pacManNode.getPosX();
-                int pacManNodePosY = pacManNode.getPosY();
-
-                //gameGrid.cells[pacManNodePosX][pacManNodePosY] = new Blank(pacManNodePosX, pacManNodePosY);
-                repaintGrid();
-                pacManNode.setPosX(closestFruit.getPosX());
-                pacManNode.setPosY(closestFruit.getPosY());
-                gameGrid.drawCells();
+                paintFinalPath();
+                pacManCopy.setPosX(closestFruit.getPosX());
+                pacManCopy.setPosY(closestFruit.getPosY());
             }
         }
     }
 
     private void sleep() {
         try {
-            Thread.sleep(500);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    private void repaintGrid() {
+    private void paintFinalPath() {
+        System.out.println(AStar.finalPath);
         for (int i = 0; i < AStar.finalPath.size()-1; i++) {
+            // Save each cell of the partial path to clean them then
+            completePath.add(AStar.finalPath.get(i));
             int posX = AStar.finalPath.get(i).getValue();
             int posY = AStar.finalPath.get(i).getKey();
             gameGrid.cells[posY][posX] = new PathCell(posX, posY);
             frame.repaint();
-            sleep();
+        }
+        //System.out.println(completePath);
+    }
+
+    private void cleanPath() {
+        for (Pair<Integer, Integer> integerIntegerPair : completePath) {
+            int posX = integerIntegerPair.getValue();
+            int posY = integerIntegerPair.getKey();
+            gameGrid.cells[posY][posX] = new Blank(posX, posY);
+            frame.repaint();
         }
     }
 
-    public boolean checkForWinner(Grid grid) {
-        return grid.fruitsNodes.size() == 0;
+    private boolean winnerFound(Grid grid) {
+        return pacManScore == gameGrid.fruitsNodes.size() || ghostsScore == gameGrid.fruitsNodes.size();
     }
 
-    private void setGridFruitsQueue() {
+//    private void setGridFruitsQueue() {
+//
+//        // Initial Node positions to reach all the fruits
+//        int currentStartNodePosX = gameGrid.pacManNode.getPosX();
+//        int currentStartNodePosY = gameGrid.pacManNode.getPosY();
+//
+//        for (int i = 0; i < gameGrid.fruitsNodes.size(); i++) {
+//            Node currentStartNode = gameGrid.cells[currentStartNodePosY][currentStartNodePosX];
+//            Fruit currentFruit = gameGrid.fruitsNodes.get(i);
+//
+//            // Set comparable value to current fruit
+//            currentFruit.gCost = AStar.getDistance(currentStartNode, currentFruit);
+//            gridFruits.add(currentFruit);
+//        }
+//    }
 
-        // Initial Node positions to reach all the fruits
-        int currentStartNodePosX = gameGrid.pacManNode.getPosX();
-        int currentStartNodePosY = gameGrid.pacManNode.getPosY();
+    private Fruit getClosestFruit(Node startNode) {
 
-        for (int i = 0; i < gameGrid.fruitsNodes.size(); i++) {
-            Node currentStartNode = gameGrid.cells[currentStartNodePosY][currentStartNodePosX];
-            Fruit currentFruit = gameGrid.fruitsNodes.get(i);
+        Fruit closestFruit = gridFruits.get(0);
+        closestFruit.gCost = AStar.getDistance(startNode, closestFruit);
+
+        for (int i = 1; i < gridFruits.size(); i++) {
+
+            Fruit currentFruit = gridFruits.get(i);
 
             // Set comparable value to current fruit
-            currentFruit.gCost = AStar.getDistance(currentStartNode, currentFruit);
-            gridFruits.add(currentFruit);
+            currentFruit.gCost = AStar.getDistance(startNode, currentFruit);
+
+            if (currentFruit.gCost < closestFruit.gCost) {
+                closestFruit = currentFruit;
+            }
         }
+        gridFruits.remove(closestFruit);
+        return closestFruit;
     }
 
     private void moveGhosts() {
         for (Ghost ghost : gameGrid.ghostsNodes) {
-            do {
-                ghost.move();
-            }while (!AStar.isInBounds(ghost.getPosX(), ghost.getPosY()));
+            int currentPosX = ghost.getPosX(), currentPosY = ghost.getPosY();
+            while (!ghost.moveOverGrid(gameGrid)) ghost.moveOverGrid(gameGrid);
+            if (gameGrid.cells[currentPosX][currentPosY] instanceof Fruit) {
+                ghostsScore++;
+            }
+            gameGrid.cells[currentPosX][currentPosY] = new Blank(currentPosX, currentPosY);
         }
     }
 

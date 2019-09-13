@@ -1,12 +1,9 @@
 # Instrucciones para uso de biblioteca de voz
 
-* Descargar archivos JAR: https://sourceforge.net/projects/freetts/files/
-* Descoprimir la carpeta y agregarla al proyecto
+* Descargar los 3 archivos de bibliotecas en la carpeta libs
+* Agregar el archivo JAR al proyecto
 * File->Project Structure->Libraries->+->Java
-* Agregar las carpetas "lib" y "bin" como librerias al proyecto
-* En caso de error null o exception agregar las siguientes lineas de primero en el try (no busca el archivo speech):
-
-System.setProperty("FreeTTSSynthEngineCentral", "com.sun.speech.freetts.jsapi.FreeTTSEngineCentral");
-System.setProperty("freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");
-Central.registerEngineCentral("com.sun.speech.freetts.jsapi.FreeTTSEngineCentral");
+* Agregar los 2 archivos .dll a IntelliJ.
+* C:\Program Files\JetBrains\IntelliJ IDEA 2019.2.1\jbr\bin
+* Mover el archivo de gramática a una dirección válida (linea 46)
 

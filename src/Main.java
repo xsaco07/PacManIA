@@ -3,41 +3,48 @@ import java.awt.*;
 
 public class Main {
 
+    private static JFrame frame;
+
     public static void main(String[] args){
         int rows = 10, cols = 10;
         int cellSize = 60;
-        State s = new State(cols,rows);
 
-        s.put(new PacMan(1, 0));
+        Grid grid = new Grid(rows, cols, new PacMan(0, 0));
 
-        s.put(new Fruit(2, 4));
-        s.put(new Fruit(3, 8));
-        s.put(new Fruit(9, 1));
+        initializeGUI(grid, rows, cols, cellSize);
+        System.out.println(grid.fruitsNodes.size());
+        Game game = new Game(grid, frame);
+        game.play();
+    }
 
-        for (int i = 0; i < 7; i++) {
-            s.put(new Block(3, i));
-            s.put(new Block(5, 9 - i));
-            s.put(new Block(7, 1));
-            s.put(new Block(9, 9 - i));
-        }
+    private static void initializeGUI(Grid grid, int rows, int cols, int cellSize) {
+        grid.put(new Fruit(5, 2));
+        grid.put(new Fruit(0, 5));
+        grid.put(new Fruit(3, 8));
+        grid.put(new Fruit(4, 7));
 
+//        for (int i = 0; i < 7; i++) {
+//            grid.put(new Block(3, i));
+//            grid.put(new Block(5, 9 - i));
+//            grid.put(new Block(7, 1));
+//            grid.put(new Block(9, 9 - i));
+//        }
 
-        s.put(new Ghost(5, 2));
-        s.put(new Ghost(9, 2));
+        grid.put(new Ghost(2, 7));
+        grid.put(new Ghost(9, 2));
+        grid.put(new Ghost(7, 6));
 
+        frame = new JFrame("PacManIA");
 
-        JFrame frame = new JFrame("PacManIA");
-
-        frame.setBounds(200,100,rows*cellSize,rows*cellSize+25);
+        frame.setBounds(200,100,cols*cellSize,rows*cellSize+25);
 
         frame.setBackground(Color.BLACK);
 
-        frame.add( new MyPanel(s, cellSize) );
+        frame.add(new MyPanel(grid, cellSize));
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         frame.setVisible(true);
     }
-
 
 }

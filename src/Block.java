@@ -1,4 +1,4 @@
-public class Block extends Ficha {
+public class Block extends Node {
 
     public Block (int initialPosX, int initialPosY) {
         setPosX(initialPosX);

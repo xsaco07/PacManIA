@@ -12,12 +12,14 @@ public class Game {
     private JFrame frame;
     private ArrayList<Fruit> gridFruits;
     private ArrayList<Pair<Integer, Integer>> completePath;
+    private Pair<Integer, Integer> nextPathCell;
 
     public Game(Grid gameGrid, JFrame frame) {
         this.gameGrid = gameGrid;
         this.frame = frame;
         goalScore = gameGrid.fruitsNodes.size();
         completePath = new ArrayList<>();
+        nextPathCell = new Pair<>(-1, -1);
         pacManScore = 0;
         ghostsScore = 0;
     }
@@ -27,6 +29,7 @@ public class Game {
             findEntirePath();
             sleep();
             cleanPath();
+            movePacMan();
             moveGhosts();
             gameGrid.repaintCells();
         }
@@ -34,9 +37,35 @@ public class Game {
     }
 
     private void movePacMan() {
+        int pathSize = AStar.finalPath.size();
+        if (pathSize > 0) {
+            // Move PacMan to the next path cell
+            int prevPosX = gameGrid.pacManNode.getPosX();
+            int prevPosY = gameGrid.pacManNode.getPosY();
+            int nextPosX = nextPathCell.getKey();
+            int nextPosY = nextPathCell.getValue();
+            gameGrid.pacManNode.setPosX(nextPosX);
+            gameGrid.pacManNode.setPosY(nextPosY);
+
+            // Node were PacMan is after the movement
+            Node currentPacManPosition = gameGrid.cells[nextPosX][nextPosX];
+
+            if (currentPacManPosition instanceof Fruit) {
+                pacManScore++;
+                gameGrid.fruitsNodes.remove(currentPacManPosition);
+                System.out.println("PacMan just ate a fruit");
+                System.out.println("PacMan score: " + pacManScore);
+            }
+
+            gameGrid.cells[prevPosX][prevPosY] = new Blank(prevPosX, prevPosY);
+
+        }
+
     }
 
     public void findEntirePath() {
+
+        boolean firstTime = true;
 
         // Restore the fruits to search them on each iteration
         gridFruits = new ArrayList<>(gameGrid.fruitsNodes);
@@ -56,6 +85,12 @@ public class Game {
                 paintFinalPath();
                 pacManCopy.setPosX(closestFruit.getPosX());
                 pacManCopy.setPosY(closestFruit.getPosY());
+                if (firstTime) {
+                    System.out.println(AStar.finalPath);
+                    // Get the first step that PacMan has to take
+                    nextPathCell = AStar.finalPath.get(0);
+                    firstTime = false;
+                }
             }
         }
     }

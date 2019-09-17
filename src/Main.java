@@ -20,13 +20,15 @@ public class Main {
     private static void initializeGUI(Grid grid, int rows, int cols, int cellSize) {
         grid.put(new Fruit(5, 2));
         grid.put(new Fruit(0, 5));
+        grid.put(new Fruit(3, 8));
+        grid.put(new Fruit(4, 7));
 
-        for (int i = 0; i < 7; i++) {
-            grid.put(new Block(3, i));
-            grid.put(new Block(5, 9 - i));
-            grid.put(new Block(7, 1));
-            grid.put(new Block(9, 9 - i));
-        }
+//        for (int i = 0; i < 7; i++) {
+//            grid.put(new Block(3, i));
+//            grid.put(new Block(5, 9 - i));
+//            grid.put(new Block(7, 1));
+//            grid.put(new Block(9, 9 - i));
+//        }
 
         grid.put(new Ghost(2, 7));
         grid.put(new Ghost(9, 2));

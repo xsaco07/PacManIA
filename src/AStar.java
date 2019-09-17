@@ -1,5 +1,6 @@
 import javafx.util.Pair;
 
+import java.awt.desktop.SystemSleepEvent;
 import java.util.*;
 
 public class AStar {
@@ -66,7 +67,6 @@ public class AStar {
             visitedNodes.add(current);
 
             if(reachGoal(current, goalNode)) {
-//                System.out.println("Path Found!");
                 finalPath = buildPath(startNode, goalNode);
                 return;
             }

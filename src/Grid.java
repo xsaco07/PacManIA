@@ -36,7 +36,7 @@ public class Grid {
         else if (node instanceof Block) blocksNodes.add((Block) node);
     }
 
-    public void drawCells() {
+    public void repaintCells() {
         // Paint pacMan
         cells[pacManNode.getPosX()][pacManNode.getPosY()] = pacManNode;
         // Paint ghosts

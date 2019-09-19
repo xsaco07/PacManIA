@@ -6,25 +6,26 @@ public class Main{
     private static JFrame frame;
 
 
-    public static void test(){
-        Foo f = new Foo();
-
-        VoiceManager.register(f);
-        VoiceManager.start();
-
-        try{
-            Thread.sleep(30 * 1000);
-            System.out.println("Main thread finished");
-            VoiceManager.stop();
-        }catch (Exception e){
-            System.out.println( "Main Thread Interrupted" );
-        }
+    private static void test(){
+//        Foo f = new Foo();
+//
+//        VoiceHelper.register(f);
+//        VoiceHelper.start();
+//
+//        try{
+//            Thread.sleep(30 * 1000);
+//            System.out.println("Main thread finished");
+//            VoiceHelper.stop();
+//        }catch (Exception e){
+//            System.out.println( "Main Thread Interrupted" );
+//        }
 
     }
 
     public static void main(String[] args){
 
-        test();
+        VoiceHelper.getInstance().say("Hi welcome to PACMAN I A . Please say theee desired game dimensions");
+//        test();
         return;
 
 //        int rows = 10, cols = 10;

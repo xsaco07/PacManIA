@@ -1,20 +1,41 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class Main {
+public class Main{
 
     private static JFrame frame;
 
+
+    public static void test(){
+        Foo f = new Foo();
+
+        VoiceManager.register(f);
+        VoiceManager.start();
+
+        try{
+            Thread.sleep(30 * 1000);
+            System.out.println("Main thread finished");
+            VoiceManager.stop();
+        }catch (Exception e){
+            System.out.println( "Main Thread Interrupted" );
+        }
+
+    }
+
     public static void main(String[] args){
-        int rows = 10, cols = 10;
-        int cellSize = 60;
 
-        Grid grid = new Grid(rows, cols, new PacMan(0, 0));
+        test();
+        return;
 
-        initializeGUI(grid, rows, cols, cellSize);
-        System.out.println(grid.fruitsNodes.size());
-        Game game = new Game(grid, frame);
-        game.play();
+//        int rows = 10, cols = 10;
+//        int cellSize = 60;
+//
+//        Grid grid = new Grid(rows, cols, new PacMan(0, 0));
+//
+//        initializeGUI(grid, rows, cols, cellSize);
+//        System.out.println(grid.fruitsNodes.size());
+//        Game game = new Game(grid, frame);
+//        game.play();
     }
 
     private static void initializeGUI(Grid grid, int rows, int cols, int cellSize) {
@@ -46,5 +67,9 @@ public class Main {
 
         frame.setVisible(true);
     }
+
+
+
+
 
 }

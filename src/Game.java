@@ -35,6 +35,11 @@ class Game {
             frame.repaint();
         }
         System.out.println("Game over!");
+        System.out.println("PacMan score: " + pacManScore);
+        System.out.println("Ghost score: " + ghostsScore);
+        if (pacManScore > ghostsScore) System.out.println("PacMan won!");
+        else if (pacManScore < ghostsScore) System.out.println("Ghosts won!");
+        else System.out.println("It's a tie");
     }
 
     private void movePacMan() {
@@ -62,8 +67,6 @@ class Game {
             if (currentNode instanceof Fruit) {
                 pacManScore++;
                 gameGrid.fruitsNodes.remove(currentNode);
-                System.out.println("PacMan just ate a fruit");
-                System.out.println("PacMan score: " + pacManScore);
             }
 
             gameGrid.cells[prevPosX][prevPosY] = new Blank(prevPosX, prevPosY);
@@ -141,7 +144,7 @@ class Game {
     }
 
     private boolean winnerFound() {
-        return pacManScore == goalScore || ghostsScore == goalScore;
+        return gameGrid.fruitsNodes.size() == 0;
     }
 
     private Fruit getClosestFruit(Node startNode) {
@@ -179,8 +182,6 @@ class Game {
             if (currentGhostPosition instanceof Fruit) {
                 ghostsScore++;
                 gameGrid.fruitsNodes.remove(currentGhostPosition);
-                System.out.println("Ghost just ate a fruit at " + previousPosX + ", " + previousPosY);
-                System.out.println("Ghost score: " + ghostsScore);
             }
 
             gameGrid.cells[previousPosX][previousPosY] = new Blank(previousPosX, previousPosY);

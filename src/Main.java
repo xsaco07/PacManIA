@@ -12,7 +12,6 @@ public class Main {
         Grid grid = new Grid(rows, cols, new PacMan(0, 0));
 
         initializeGUI(grid, rows, cols, cellSize);
-        System.out.println(grid.fruitsNodes.size());
         Game game = new Game(grid, frame);
         game.play();
     }
@@ -21,7 +20,7 @@ public class Main {
         grid.put(new Fruit(5, 2));
         grid.put(new Fruit(0, 5));
         grid.put(new Fruit(3, 8));
-        grid.put(new Fruit(4, 7));
+        grid.put(new Fruit(8, 7));
 
 //        for (int i = 0; i < 7; i++) {
 //            grid.put(new Block(3, i));
@@ -30,9 +29,9 @@ public class Main {
 //            grid.put(new Block(9, 9 - i));
 //        }
 
-//        grid.put(new Ghost(2, 7));
-//        grid.put(new Ghost(9, 2));
-//        grid.put(new Ghost(7, 6));
+        grid.put(new Ghost(2, 7));
+        grid.put(new Ghost(9, 2));
+        grid.put(new Ghost(7, 6));
 
         frame = new JFrame("PacManIA");
 

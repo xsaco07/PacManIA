@@ -6,26 +6,16 @@ public class Main{
     private static JFrame frame;
 
 
-    private static void test(){
-//        Foo f = new Foo();
-//
-//        VoiceHelper.register(f);
-//        VoiceHelper.start();
-//
-//        try{
-//            Thread.sleep(30 * 1000);
-//            System.out.println("Main thread finished");
-//            VoiceHelper.stop();
-//        }catch (Exception e){
-//            System.out.println( "Main Thread Interrupted" );
-//        }
+    public static void test(){
 
+        int data[] = UserInput.getInstance().askDimensions();
+
+        System.out.println(String.format("Main got %d %d %d ", data[0], data[1], data[2]));
     }
 
     public static void main(String[] args){
 
-        VoiceHelper.getInstance().say("Hi welcome to PACMAN I A . Please say theee desired game dimensions");
-//        test();
+        test();
         return;
 
 //        int rows = 10, cols = 10;

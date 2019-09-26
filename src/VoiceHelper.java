@@ -14,6 +14,8 @@ public class VoiceHelper {
 
     private static VoiceHelper instance;
 
+    private boolean isRunning = false;
+
     public static VoiceHelper getInstance(){
         if(instance == null){
             instance = new VoiceHelper();
@@ -28,6 +30,10 @@ public class VoiceHelper {
 
 
     public void register(Listener listener){
+        if( ! isRunning){
+            start();
+            isRunning = true;
+        }
         clients.add(listener);
         System.out.println("New client registered");
     }

@@ -6,4 +6,4 @@
 
 grammar grammar;
 
-public <command>  = ( up | down | resize | stop | continue);
+public <command>  = ( five | six | seven | eight );

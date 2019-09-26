@@ -7,11 +7,11 @@ public class Grid {
     Node pacManNode;
     ArrayList<Fruit> fruitsNodes;
     ArrayList<Ghost> ghostsNodes;
-    ArrayList<Block> blocksNodes;
+    private ArrayList<Block> blocksNodes;
 
-    public Node[][] cells;
+    Node[][] cells;
 
-    public Grid(int width, int height, PacMan pacMan){
+    Grid(int width, int height, PacMan pacMan){
         this.width = width;
         this.height = height;
 
@@ -28,7 +28,7 @@ public class Grid {
         this.put(pacMan);
     }
 
-    public void put(Node node){
+    void put(Node node){
         int posX = node.getPosX(), posY = node.getPosY();
         cells[posX][posY] = node;
         if (node instanceof Fruit) fruitsNodes.add((Fruit) node);
@@ -36,7 +36,7 @@ public class Grid {
         else if (node instanceof Block) blocksNodes.add((Block) node);
     }
 
-    public void repaintCells() {
+    void repaintCells() {
         // Paint pacMan
         cells[pacManNode.getPosX()][pacManNode.getPosY()] = pacManNode;
         // Paint ghosts

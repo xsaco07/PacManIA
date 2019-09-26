@@ -3,7 +3,7 @@ import javafx.util.Pair;
 import javax.swing.*;
 import java.util.ArrayList;
 
-public class Game {
+class Game {
 
     private int pacManScore;
     private int ghostsScore;
@@ -12,115 +12,132 @@ public class Game {
     private JFrame frame;
     private ArrayList<Fruit> gridFruits;
     private ArrayList<Pair<Integer, Integer>> completePath;
-    private Pair<Integer, Integer> nextPathCell;
+    private ArrayList<Pair<Integer, Integer>> currentPath;
 
-    public Game(Grid gameGrid, JFrame frame) {
+    Game(Grid gameGrid, JFrame frame) {
         this.gameGrid = gameGrid;
         this.frame = frame;
         goalScore = gameGrid.fruitsNodes.size();
         completePath = new ArrayList<>();
-        nextPathCell = new Pair<>(-1, -1);
+        currentPath = new ArrayList<>();
         pacManScore = 0;
         ghostsScore = 0;
     }
 
-    public void play() {
+    void play() {
         while (!winnerFound()) {
             findEntirePath();
             sleep();
-            cleanPath();
             movePacMan();
             moveGhosts();
+            cleanPath();
             gameGrid.repaintCells();
+            frame.repaint();
         }
         System.out.println("Game over!");
     }
 
     private void movePacMan() {
-        int pathSize = AStar.finalPath.size();
+        //System.out.println(completePath);
+        int pathSize = completePath.size();
         if (pathSize > 0) {
+
             // Move PacMan to the next path cell
             int prevPosX = gameGrid.pacManNode.getPosX();
             int prevPosY = gameGrid.pacManNode.getPosY();
-            int nextPosX = nextPathCell.getKey();
-            int nextPosY = nextPathCell.getValue();
+
+            Pair<Integer, Integer> nextPathCellPosition = completePath.get(0);
+            int nextPosX = nextPathCellPosition.getKey();
+            int nextPosY = nextPathCellPosition.getValue();
+
+            //System.out.println(nextPosX + " " + nextPosY);
+            //System.out.println("Node at " + nextPosX + " " + nextPosY + ": " + gameGrid.cells[nextPosX][nextPosY]);
+
             gameGrid.pacManNode.setPosX(nextPosX);
             gameGrid.pacManNode.setPosY(nextPosY);
 
-            // Node were PacMan is after the movement
-            Node currentPacManPosition = gameGrid.cells[nextPosX][nextPosX];
+            // Node where pacMan is at after move to nextPosition
+            Node currentNode = gameGrid.cells[nextPosX][nextPosY];
 
-            if (currentPacManPosition instanceof Fruit) {
+            if (currentNode instanceof Fruit) {
                 pacManScore++;
-                gameGrid.fruitsNodes.remove(currentPacManPosition);
+                gameGrid.fruitsNodes.remove(currentNode);
                 System.out.println("PacMan just ate a fruit");
                 System.out.println("PacMan score: " + pacManScore);
             }
 
             gameGrid.cells[prevPosX][prevPosY] = new Blank(prevPosX, prevPosY);
 
+            //System.out.println(prevPosX + " " + prevPosY);
+
         }
+        else System.out.println("Complete path empty");
 
     }
 
-    public void findEntirePath() {
-
-        boolean firstTime = true;
+    private void findEntirePath() {
 
         // Restore the fruits to search them on each iteration
         gridFruits = new ArrayList<>(gameGrid.fruitsNodes);
 
-        int gridFruitsSize = gridFruits.size();
+        // Restore completePath so it does not accumulate
+        completePath.clear();
 
-        // Copy the original pac man to find all the path traversing all fruits
+        int numFruits = gridFruits.size();
+
+        // Copy the original pacMan to find the completePath through the fruits without move at all
         Node pacManCopy = new PacMan((PacMan) gameGrid.pacManNode);
 
-        for (int i = 0; i < gridFruitsSize; i++) {
+        for (int i = 0; i < numFruits; i++) { // Perform A* many times as fruits exist in the grid
 
             Fruit closestFruit = getClosestFruit(pacManCopy);
-            AStar.setGrid(gameGrid);
-            AStar.findPath(pacManCopy, closestFruit);
 
-            if (AStar.finalPath != null) {
-                paintFinalPath();
+            currentPath = AStar.findPath(gameGrid, pacManCopy, closestFruit);
+
+            //System.out.println(pacManCopy);
+            //System.out.println(closestFruit);
+            //System.out.println("PacMan" + pacManCopy.getPosX() + "," + pacManCopy.getPosY());
+            //System.out.println("Fruit" + closestFruit.getPosX() + "," + closestFruit.getPosY());
+
+            if (currentPath != null) {
+                paintFinalPath(currentPath);
+                // Update pacMan position to find next path to closest fruit
                 pacManCopy.setPosX(closestFruit.getPosX());
                 pacManCopy.setPosY(closestFruit.getPosY());
-                if (firstTime) {
-                    System.out.println(AStar.finalPath);
-                    // Get the first step that PacMan has to take
-                    nextPathCell = AStar.finalPath.get(0);
-                    firstTime = false;
-                }
             }
         }
     }
 
     private void sleep() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(900);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    private void paintFinalPath() {
-        for (int i = 0; i < AStar.finalPath.size()-1; i++) {
-            // Save each cell of the partial path to clean them then
-            completePath.add(AStar.finalPath.get(i));
-            int posX = AStar.finalPath.get(i).getKey();
-            int posY = AStar.finalPath.get(i).getValue();
-            gameGrid.cells[posX][posY] = new PathCell(posX, posY);
-            frame.repaint();
+    private void paintFinalPath(ArrayList<Pair<Integer, Integer>> currentPath) {
+        for (Pair<Integer, Integer> pair : currentPath) {
+            // Save each cell of the path to clean them in the grid later
+            completePath.add(pair);
+
+            int posX = pair.getKey();
+            int posY = pair.getValue();
+            // Avoid painting the fruit cell
+            if (!(gameGrid.cells[posX][posY] instanceof Fruit))
+                gameGrid.cells[posX][posY] = new PathCell(posX, posY);
         }
+
     }
 
     private void cleanPath() {
-        for (Pair<Integer, Integer> integerIntegerPair : completePath) {
-            int posX = integerIntegerPair.getKey();
-            int posY = integerIntegerPair.getValue();
-            gameGrid.cells[posX][posY] = new Blank(posX, posY);
+        for (Pair<Integer, Integer> pair : completePath) {
+            int posX = pair.getKey();
+            int posY = pair.getValue();
+            // Avoid cleaning the fruit cell
+            if (!(gameGrid.cells[posX][posY] instanceof Fruit))
+                gameGrid.cells[posX][posY] = new Blank(posX, posY);
         }
-        frame.repaint();
     }
 
     private boolean winnerFound() {
@@ -130,14 +147,14 @@ public class Game {
     private Fruit getClosestFruit(Node startNode) {
 
         Fruit closestFruit = gridFruits.get(0);
-        closestFruit.gCost = AStar.getDistance(startNode, closestFruit);
+        closestFruit.gCost = AStar.getManhattanDistance(startNode, closestFruit);
 
         for (int i = 1; i < gridFruits.size(); i++) {
 
             Fruit currentFruit = gridFruits.get(i);
 
             // Set comparable value to current fruit
-            currentFruit.gCost = AStar.getDistance(startNode, currentFruit);
+            currentFruit.gCost = AStar.getManhattanDistance(startNode, currentFruit);
 
             if (currentFruit.gCost < closestFruit.gCost) {
                 closestFruit = currentFruit;

@@ -30,9 +30,9 @@ public class Main {
 //            grid.put(new Block(9, 9 - i));
 //        }
 
-        grid.put(new Ghost(2, 7));
-        grid.put(new Ghost(9, 2));
-        grid.put(new Ghost(7, 6));
+//        grid.put(new Ghost(2, 7));
+//        grid.put(new Ghost(9, 2));
+//        grid.put(new Ghost(7, 6));
 
         frame = new JFrame("PacManIA");
 

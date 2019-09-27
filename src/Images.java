@@ -1,5 +1,5 @@
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashMap;
 
@@ -9,13 +9,13 @@ abstract class Images {
        put( PacMan.class.getName(), "imgs/pacman2.png");
        put( Block.class.getName(), "imgs/brick.jpeg");
        put( Fruit.class.getName(), "imgs/fruit3.png");
-       put( Ghost.class.getName(), "imgs/ghost4.png");
+       put( Ghost.class.getName(), "imgs/ghost3.PNG");
        put( Blank.class.getName(), "imgs/square3.JPG");
-       put( PathCell.class.getName(), "imgs/pathCell.png");
+       put( PathCell.class.getName(), "imgs/point2.jpg");
     }};
 
-    static Image getImageFor(String symbol){
-        Image image = null;
+    static BufferedImage getImageFor(String symbol){
+        BufferedImage image = null;
         try{
             image  = ImageIO.read(new File(imageFor.get(symbol)));
         }

@@ -1,7 +1,10 @@
 import javafx.util.Pair;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MyPanel extends JPanel {
@@ -22,7 +25,7 @@ public class MyPanel extends JPanel {
             for (int col = 0; col < grid.width; col++) {
 
                 String imageName = grid.cells[row][col].getClass().getName();
-                Image image = Images.getImageFor(imageName);
+                BufferedImage image = Images.getImageFor(imageName);
 
                 Font myFont = new Font ("Courier New", Font.BOLD, 17);
                 g.setFont(myFont);

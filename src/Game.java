@@ -53,9 +53,6 @@ class Game {
             int nextPosX = nextPathCellPosition.getKey();
             int nextPosY = nextPathCellPosition.getValue();
 
-            //System.out.println(nextPosX + " " + nextPosY);
-            //System.out.println("Node at " + nextPosX + " " + nextPosY + ": " + gameGrid.cells[nextPosX][nextPosY]);
-
             gameGrid.pacManNode.setPosX(nextPosX);
             gameGrid.pacManNode.setPosY(nextPosY);
 
@@ -68,8 +65,6 @@ class Game {
             }
 
             gameGrid.cells[prevPosX][prevPosY] = new Blank(prevPosX, prevPosY);
-
-            //System.out.println(prevPosX + " " + prevPosY);
 
         }
         else System.out.println("Complete path empty");
@@ -94,10 +89,6 @@ class Game {
             Fruit closestFruit = getClosestFruit(pacManCopy);
 
             currentPath = AStar.findPath(gameGrid, pacManCopy, closestFruit);
-            //System.out.println(pacManCopy);
-            //System.out.println(closestFruit);
-            //System.out.println("PacMan" + pacManCopy.getPosX() + "," + pacManCopy.getPosY());
-            //System.out.println("Fruit" + closestFruit.getPosX() + "," + closestFruit.getPosY());
 
             if (currentPath != null) {
                 paintFinalPath(currentPath);
@@ -110,7 +101,7 @@ class Game {
 
     private void sleep() {
         try {
-            Thread.sleep(500);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -1,5 +1,9 @@
 import com.sun.jdi.VMOutOfMemoryException;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 
 public class UserInput implements Listener {
@@ -18,7 +22,7 @@ public class UserInput implements Listener {
 
     // Valid Bounds for the values that the user can enter
     private final int MIN_VALUE = 5;
-    private final int MAX_VALUE = 7;
+    private final int MAX_VALUE = 100;
 
 
 
@@ -32,7 +36,27 @@ public class UserInput implements Listener {
 
 
     private UserInput(){
+        initNumMapping();
+        System.out.println(numMapping);
+    }
 
+    private void initNumMapping() {
+        numMapping = new HashMap<String, Integer>();
+        int value = 1;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("resources/nums.txt"));
+
+            String line = reader.readLine();
+            while (line != null) {
+                numMapping.put(line, value);
+                value++;
+                line = reader.readLine();
+
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static UserInput getInstance(){
@@ -44,12 +68,7 @@ public class UserInput implements Listener {
 
 
     // TEMP mapping
-    private HashMap<String, Integer> numMapping = new HashMap<String, Integer>(){{
-        put("five", 5);
-        put("six", 6);
-        put("seven", 7);
-        put("eight", 8);
-    }};
+    private HashMap<String, Integer> numMapping;
 
 
     /**

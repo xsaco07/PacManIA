@@ -3,13 +3,7 @@ import java.awt.*;
 import java.io.File;
 import java.util.HashMap;
 
-public abstract class Images {
-
-//    public static final char PACMAN = 'C';
-//    public static final char GHOST = 'O';
-//    public static final char OBSTACLE = '#';
-//    public static final char FRUIT = 'F';
-//    public static final char EMPTY = '-';
+abstract class Images {
 
     private static HashMap<String, String> imageFor = new HashMap<>(){{
        put( PacMan.class.getName(), "imgs/pacman2.png");
@@ -20,7 +14,7 @@ public abstract class Images {
        put( PathCell.class.getName(), "imgs/pathCell.png");
     }};
 
-    public static Image getImageFor(String symbol){
+    static Image getImageFor(String symbol){
         Image image = null;
         try{
             image  = ImageIO.read(new File(imageFor.get(symbol)));

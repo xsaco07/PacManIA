@@ -7,7 +7,6 @@ class Game {
 
     private int pacManScore;
     private int ghostsScore;
-    private int goalScore;
     private Grid gameGrid;
     private JFrame frame;
     private ArrayList<Fruit> gridFruits;
@@ -17,7 +16,6 @@ class Game {
     Game(Grid gameGrid, JFrame frame) {
         this.gameGrid = gameGrid;
         this.frame = frame;
-        goalScore = gameGrid.fruitsNodes.size();
         completePath = new ArrayList<>();
         currentPath = new ArrayList<>();
         pacManScore = 0;
@@ -96,7 +94,6 @@ class Game {
             Fruit closestFruit = getClosestFruit(pacManCopy);
 
             currentPath = AStar.findPath(gameGrid, pacManCopy, closestFruit);
-
             //System.out.println(pacManCopy);
             //System.out.println(closestFruit);
             //System.out.println("PacMan" + pacManCopy.getPosX() + "," + pacManCopy.getPosY());
@@ -113,7 +110,7 @@ class Game {
 
     private void sleep() {
         try {
-            Thread.sleep(900);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -121,15 +118,17 @@ class Game {
 
     private void paintFinalPath(ArrayList<Pair<Integer, Integer>> currentPath) {
         for (Pair<Integer, Integer> pair : currentPath) {
+
             // Save each cell of the path to clean them in the grid later
             completePath.add(pair);
 
             int posX = pair.getKey();
             int posY = pair.getValue();
             // Avoid painting the fruit cell
-            if (!(gameGrid.cells[posX][posY] instanceof Fruit))
+            if (!(gameGrid.cells[posX][posY] instanceof Fruit) && !(gameGrid.cells[posX][posY] instanceof PacMan))
                 gameGrid.cells[posX][posY] = new PathCell(posX, posY);
         }
+
 
     }
 

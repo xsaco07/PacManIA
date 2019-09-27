@@ -4,6 +4,8 @@ import java.util.*;
 class AStar {
 
     private static Grid gameGrid;
+    private static final int DIAGONAL_COST = 14;
+    private static final int FORWARD_DISTANCE = 10;
 
     private static ArrayList<Node> generateChildren(Node currentNode) {
 
@@ -13,22 +15,33 @@ class AStar {
         int currentNodePosX = currentNode.getPosX();
         int currentNodePosY = currentNode.getPosY();
 
-        // Can moveOverGrid ? Add that one
-        if (isInBounds(currentNodePosX+1, currentNodePosY) && isNotBlocked(currentNodePosX + 1, currentNodePosY)) {
+        // Up, Down, Left, Right
+
+        if (isInBounds(currentNodePosX+1, currentNodePosY) && isNotBlocked(currentNodePosX + 1, currentNodePosY))
             children.add(gameGrid.cells[currentNodePosX+1][currentNodePosY]);
-        }
-        // Can moveOverGrid ? Add that one
-        if (isInBounds(currentNodePosX, currentNodePosY+1) && isNotBlocked(currentNodePosX, currentNodePosY + 1)) {
+
+        if (isInBounds(currentNodePosX, currentNodePosY+1) && isNotBlocked(currentNodePosX, currentNodePosY + 1))
             children.add(gameGrid.cells[currentNodePosX][currentNodePosY+1]);
-        }
-        // Can moveOverGrid ? Add that one
-        if (isInBounds(currentNodePosX-1, currentNodePosY) && isNotBlocked(currentNodePosX - 1, currentNodePosY)) {
+
+        if (isInBounds(currentNodePosX-1, currentNodePosY) && isNotBlocked(currentNodePosX - 1, currentNodePosY))
             children.add(gameGrid.cells[currentNodePosX-1][currentNodePosY]);
-        }
-        // Can moveOverGrid ? Add that one
-        if (isInBounds(currentNodePosX, currentNodePosY-1) && isNotBlocked(currentNodePosX, currentNodePosY - 1)) {
+
+        if (isInBounds(currentNodePosX, currentNodePosY-1) && isNotBlocked(currentNodePosX, currentNodePosY - 1))
             children.add(gameGrid.cells[currentNodePosX][currentNodePosY-1]);
-        }
+
+        // Diagonals
+
+        if (isInBounds(currentNodePosX + 1, currentNodePosY + 1) && isNotBlocked(currentNodePosX + 1, currentNodePosY + 1))
+            children.add(gameGrid.cells[currentNodePosX+1][currentNodePosY+1]);
+
+        if (isInBounds(currentNodePosX + 1, currentNodePosY - 1) && isNotBlocked(currentNodePosX + 1, currentNodePosY - 1))
+            children.add(gameGrid.cells[currentNodePosX+1][currentNodePosY-1]);
+
+        if (isInBounds(currentNodePosX - 1, currentNodePosY + 1) && isNotBlocked(currentNodePosX - 1, currentNodePosY + 1))
+            children.add(gameGrid.cells[currentNodePosX-1][currentNodePosY+1]);
+
+        if (isInBounds(currentNodePosX - 1, currentNodePosY - 1) && isNotBlocked(currentNodePosX - 1, currentNodePosY - 1))
+            children.add(gameGrid.cells[currentNodePosX-1][currentNodePosY-1]);
 
         return children;
     }
@@ -43,9 +56,13 @@ class AStar {
                 (posY < (gameGrid.height) && posY >= 0);
     }
 
+    // Formula: 14*y + 10*(x-y) where x = horizontal distance and y = vertical distance
     static int getManhattanDistance(Node origin, Node destiny) {
-        return ((Math.abs(origin.getPosX() - destiny.getPosX())) +
-                (Math.abs(origin.getPosY()- destiny.getPosY())));
+        int distX = Math.abs(origin.getPosX() - destiny.getPosX());
+        int distY = Math.abs(origin.getPosY() - destiny.getPosY());
+        if (distX > distY)
+            return (distY * DIAGONAL_COST) + (FORWARD_DISTANCE * (distX - distY));
+        return (distX * DIAGONAL_COST) + (FORWARD_DISTANCE * (distY - distX));
     }
 
     static ArrayList<Pair<Integer, Integer>> findPath(Grid grid, Node startNode, Node goalNode) {

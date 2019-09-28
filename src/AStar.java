@@ -1,10 +1,11 @@
 import javafx.util.Pair;
 import java.util.*;
 
-public class AStar {
+class AStar {
 
     private static Grid gameGrid;
-    public static ArrayList<Pair<Integer, Integer>> finalPath;
+    private static final int DIAGONAL_COST = 14;
+    private static final int FORWARD_DISTANCE = 10;
 
     private static ArrayList<Node> generateChildren(Node currentNode) {
 
@@ -14,22 +15,33 @@ public class AStar {
         int currentNodePosX = currentNode.getPosX();
         int currentNodePosY = currentNode.getPosY();
 
-        // Can moveOverGrid ? Add that one
-        if (isInBounds(currentNodePosX+1, currentNodePosY) && isNotBlocked(currentNodePosX + 1, currentNodePosY)) {
+        // Up, Down, Left, Right
+
+        if (isInBounds(currentNodePosX+1, currentNodePosY) && isNotBlocked(currentNodePosX + 1, currentNodePosY))
             children.add(gameGrid.cells[currentNodePosX+1][currentNodePosY]);
-        }
-        // Can moveOverGrid ? Add that one
-        if (isInBounds(currentNodePosX, currentNodePosY+1) && isNotBlocked(currentNodePosX, currentNodePosY + 1)) {
+
+        if (isInBounds(currentNodePosX, currentNodePosY+1) && isNotBlocked(currentNodePosX, currentNodePosY + 1))
             children.add(gameGrid.cells[currentNodePosX][currentNodePosY+1]);
-        }
-        // Can moveOverGrid ? Add that one
-        if (isInBounds(currentNodePosX-1, currentNodePosY) && isNotBlocked(currentNodePosX - 1, currentNodePosY)) {
+
+        if (isInBounds(currentNodePosX-1, currentNodePosY) && isNotBlocked(currentNodePosX - 1, currentNodePosY))
             children.add(gameGrid.cells[currentNodePosX-1][currentNodePosY]);
-        }
-        // Can moveOverGrid ? Add that one
-        if (isInBounds(currentNodePosX, currentNodePosY-1) && isNotBlocked(currentNodePosX, currentNodePosY - 1)) {
+
+        if (isInBounds(currentNodePosX, currentNodePosY-1) && isNotBlocked(currentNodePosX, currentNodePosY - 1))
             children.add(gameGrid.cells[currentNodePosX][currentNodePosY-1]);
-        }
+
+        // Diagonals
+
+        if (isInBounds(currentNodePosX + 1, currentNodePosY + 1) && isNotBlocked(currentNodePosX + 1, currentNodePosY + 1))
+            children.add(gameGrid.cells[currentNodePosX+1][currentNodePosY+1]);
+
+        if (isInBounds(currentNodePosX + 1, currentNodePosY - 1) && isNotBlocked(currentNodePosX + 1, currentNodePosY - 1))
+            children.add(gameGrid.cells[currentNodePosX+1][currentNodePosY-1]);
+
+        if (isInBounds(currentNodePosX - 1, currentNodePosY + 1) && isNotBlocked(currentNodePosX - 1, currentNodePosY + 1))
+            children.add(gameGrid.cells[currentNodePosX-1][currentNodePosY+1]);
+
+        if (isInBounds(currentNodePosX - 1, currentNodePosY - 1) && isNotBlocked(currentNodePosX - 1, currentNodePosY - 1))
+            children.add(gameGrid.cells[currentNodePosX-1][currentNodePosY-1]);
 
         return children;
     }
@@ -38,21 +50,24 @@ public class AStar {
         return (!(gameGrid.cells[posX][posY] instanceof Block) && !(gameGrid.cells[posX][posY] instanceof Ghost));
     }
 
-    public static boolean isInBounds(int posX, int posY) {
+    private static boolean isInBounds(int posX, int posY) {
         return (posX < (gameGrid.width) && posX >= 0)
                 &&
                 (posY < (gameGrid.height) && posY >= 0);
     }
 
-    // Manhattan distance
-    static int getDistance(Node origin, Node destiny) {
-        return ((Math.abs(origin.getPosX() - destiny.getPosX())) +
-                (Math.abs(origin.getPosY()- destiny.getPosY())));
+    // Formula: 14*y + 10*(x-y) where x = horizontal distance and y = vertical distance
+    static int getManhattanDistance(Node origin, Node destiny) {
+        int distX = Math.abs(origin.getPosX() - destiny.getPosX());
+        int distY = Math.abs(origin.getPosY() - destiny.getPosY());
+        if (distX > distY)
+            return (distY * DIAGONAL_COST) + (FORWARD_DISTANCE * (distX - distY));
+        return (distX * DIAGONAL_COST) + (FORWARD_DISTANCE * (distY - distX));
     }
 
-    public static void setGrid(Grid grid) {gameGrid = grid;}
+    static ArrayList<Pair<Integer, Integer>> findPath(Grid grid, Node startNode, Node goalNode) {
 
-    public static void findPath(Node startNode, Node goalNode) {
+        gameGrid = grid; // Set grid
 
         PriorityQueue<Node> openNodes = new PriorityQueue<>();
         ArrayList<Node> visitedNodes = new ArrayList<>();
@@ -65,19 +80,18 @@ public class AStar {
             visitedNodes.add(current);
 
             if(reachGoal(current, goalNode)) {
-                finalPath = buildPath(startNode, goalNode);
-                return;
+                return buildPath(startNode, goalNode);
             }
 
             for(Node neighbor : generateChildren(current)) { // Generates only valid states
 
                 if(!visitedNodes.contains(neighbor)) {
 
-                    int tentativeNeighborGCost = current.gCost + getDistance(current, neighbor);
+                    int tentativeNeighborGCost = current.gCost + getManhattanDistance(current, neighbor);
 
                     if (tentativeNeighborGCost < neighbor.gCost || !openNodes.contains(neighbor)) {
                         neighbor.gCost = tentativeNeighborGCost;
-                        neighbor.hCost = getDistance(neighbor, goalNode);
+                        neighbor.hCost = getManhattanDistance(neighbor, goalNode);
                         neighbor.parent = current;
                         if (!openNodes.contains(neighbor)) {
                             openNodes.add(neighbor);
@@ -87,10 +101,11 @@ public class AStar {
             }
         }
         System.out.println("Solution Not Found!");
+        return null;
     }
 
     private static boolean reachGoal(Node node, Node goalNode) {
-        return getDistance(node, goalNode) == 0;
+        return getManhattanDistance(node, goalNode) == 0;
     }
 
     private static ArrayList<Pair<Integer, Integer>> buildPath(Node startNode, Node endNode) {
@@ -99,7 +114,7 @@ public class AStar {
         ArrayList<Pair<Integer, Integer>> pathPositions = new ArrayList<>();
         Pair<Integer, Integer> currentPositions;
 
-        while (iterator != startNode) {
+        while (iterator != startNode && iterator != null) {
             currentPositions = new Pair<>(iterator.getPosX(), iterator.getPosY());
             pathPositions.add(currentPositions);
             iterator = iterator.parent;

@@ -24,11 +24,9 @@ public class Main{
 
     public static void main(String[] args){
 
-        test();
-        return;
-
         int rows = 10, cols = 10;
         int cellSize = 60;
+        Grid grid = new Grid(rows, cols, new PacMan(0 , 0));
         initializeGUI(grid, rows, cols, cellSize);
         Game game = new Game(grid, frame);
         game.play();

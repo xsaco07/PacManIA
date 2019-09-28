@@ -6,12 +6,12 @@ import java.util.HashMap;
 abstract class Images {
 
     private static HashMap<String, String> imageFor = new HashMap<>(){{
-       put( PacMan.class.getName(), "imgs/pacman2.png");
-       put( Block.class.getName(), "imgs/brick.jpeg");
-       put( Fruit.class.getName(), "imgs/fruit3.png");
-       put( Ghost.class.getName(), "imgs/ghost3.PNG");
-       put( Blank.class.getName(), "imgs/square3.JPG");
-       put( PathCell.class.getName(), "imgs/point2.jpg");
+       put( PacMan.class.getName(), "resources/imgs/pacman2.png");
+       put( Block.class.getName(), "resources/imgs/brick.jpeg");
+       put( Fruit.class.getName(), "resources/imgs/fruit3.png");
+       put( Ghost.class.getName(), "resources/imgs/ghost4.png");
+       put( Blank.class.getName(), "resources/imgs/square3.JPG");
+       put( PathCell.class.getName(), "resources/imgs/pathCell.png");
     }};
 
     static BufferedImage getImageFor(String symbol){

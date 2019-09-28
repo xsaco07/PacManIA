@@ -1,16 +1,34 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class Main {
+public class Main{
 
     private static JFrame frame;
 
+
+    public static void test(){
+        Foo f = new Foo();
+
+        VoiceManager.register(f);
+        VoiceManager.start();
+
+        try{
+            Thread.sleep(30 * 1000);
+            System.out.println("Main thread finished");
+            VoiceManager.stop();
+        }catch (Exception e){
+            System.out.println( "Main Thread Interrupted" );
+        }
+
+    }
+
     public static void main(String[] args){
+
+        test();
+        return;
+
         int rows = 10, cols = 10;
         int cellSize = 60;
-
-        Grid grid = new Grid(rows, cols, new PacMan(0, 0));
-
         initializeGUI(grid, rows, cols, cellSize);
         Game game = new Game(grid, frame);
         game.play();
@@ -50,5 +68,9 @@ public class Main {
 
         frame.setVisible(true);
     }
+
+
+
+
 
 }

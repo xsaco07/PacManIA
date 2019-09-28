@@ -18,6 +18,12 @@ public class MyPanel extends JPanel {
         currentPath = new ArrayList<>();
     }
 
+    public void setCellSize(int cellSize){
+        this.cellSize = cellSize;
+    }
+
+    public static void setGrid(Grid grid) {grid = grid;}
+
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);

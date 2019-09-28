@@ -59,8 +59,7 @@ public class Ghost extends Node {
     }
 
     private boolean isNotBlocked(Grid gameGrid, int posX, int posY) {
-        return (!(gameGrid.cells[posX][posY] instanceof Block) && !(gameGrid.cells[posX][posY] instanceof Ghost))
-                && (!(gameGrid.cells[posX][posY] instanceof PacMan));
+        return (!(gameGrid.cells[posX][posY] instanceof Block) && !(gameGrid.cells[posX][posY] instanceof PacMan) && !(gameGrid.cells[posX][posY] instanceof Ghost));
     }
 
     private  boolean isInBounds(Grid gameGrid, int posX, int posY) {

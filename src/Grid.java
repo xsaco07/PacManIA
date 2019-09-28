@@ -14,9 +14,10 @@ public class Grid {
 
     ArrayList<Fruit> fruitsNodes;
     ArrayList<Ghost> ghostsNodes;
-    ArrayList<Block> blocksNodes;
+    private ArrayList<Block> blocksNodes;
 
-    public Node[][] cells;
+    Node[][] cells;
+
 
     /**
      * Initializes attrs, sets all cells to blanks, puts the Pacman randomly, spawns fuits and ghosts

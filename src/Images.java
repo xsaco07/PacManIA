@@ -1,15 +1,9 @@
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashMap;
 
-public abstract class Images {
-
-//    public static final char PACMAN = 'C';
-//    public static final char GHOST = 'O';
-//    public static final char OBSTACLE = '#';
-//    public static final char FRUIT = 'F';
-//    public static final char EMPTY = '-';
+abstract class Images {
 
     private static HashMap<String, String> imageFor = new HashMap<>(){{
        put( PacMan.class.getName(), "resources/imgs/pacman2.png");
@@ -20,8 +14,8 @@ public abstract class Images {
        put( PathCell.class.getName(), "resources/imgs/pathCell.png");
     }};
 
-    public static Image getImageFor(String symbol){
-        Image image = null;
+    static BufferedImage getImageFor(String symbol){
+        BufferedImage image = null;
         try{
             image  = ImageIO.read(new File(imageFor.get(symbol)));
         }

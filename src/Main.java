@@ -23,7 +23,6 @@ public class Main{
         game.play();
     }
 
-
     /**
      * Initializes the JFrame
      * @param grid

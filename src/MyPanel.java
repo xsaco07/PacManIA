@@ -22,6 +22,8 @@ public class MyPanel extends JPanel {
         this.cellSize = cellSize;
     }
 
+    public static void setGrid(Grid grid) {grid = grid;}
+
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);

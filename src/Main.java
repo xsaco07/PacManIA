@@ -8,11 +8,9 @@ public class Main{
     // This is put in a class attributes because couldn't reach it through the JFrame
     private static MyPanel myPanel;
 
-
-
     public static void main(String[] args){
 
-        int rows = 10, cols = 10;
+        int rows = 12, cols = 12;
         int cellSize = 60;
 
         Grid grid = new Grid(rows, cols);
@@ -31,7 +29,6 @@ public class Main{
     private static void initializeGUI(Grid grid, int cellSize) {
 
         frame = new JFrame("PacManIA");
-
 
         frame.setBackground(Color.BLACK);
 
@@ -63,7 +60,7 @@ public class Main{
 
 
         // Don't know why it's necessary to add this to the frame's height to be displayed properly
-        int EXTRA_HEIGHT = 35;
+        int EXTRA_HEIGHT = 30;
 
         // Resize the frame
         frame.setBounds(200,100, grid.width*cellSize,grid.height*cellSize+EXTRA_HEIGHT);

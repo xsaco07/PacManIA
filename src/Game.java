@@ -3,7 +3,7 @@ import javafx.util.Pair;
 import javax.swing.*;
 import java.util.ArrayList;
 
-class Game {
+class Game implements Listener {
 
     private int pacManScore;
     private int ghostsScore;
@@ -12,6 +12,7 @@ class Game {
     private ArrayList<Fruit> gridFruits;
     private ArrayList<Pair<Integer, Integer>> completePath;
     private ArrayList<Pair<Integer, Integer>> currentPath;
+    private boolean diagonalsAllowed;
 
     Game(Grid gameGrid, JFrame frame) {
         this.gameGrid = gameGrid;
@@ -20,6 +21,8 @@ class Game {
         currentPath = new ArrayList<>();
         pacManScore = 0;
         ghostsScore = 0;
+        diagonalsAllowed = false;
+        VoiceHelper.getInstance().register(this);
     }
 
     void play() {
@@ -88,7 +91,7 @@ class Game {
 
             Fruit closestFruit = getClosestFruit(pacManCopy);
 
-            currentPath = AStar.findPath(gameGrid, pacManCopy, closestFruit);
+            currentPath = AStar.findPath(gameGrid, pacManCopy, closestFruit, diagonalsAllowed);
 
             if (currentPath != null) {
                 paintFinalPath(currentPath);
@@ -119,8 +122,6 @@ class Game {
             if (!(gameGrid.cells[posX][posY] instanceof Fruit) && !(gameGrid.cells[posX][posY] instanceof PacMan))
                 gameGrid.cells[posX][posY] = new PathCell(posX, posY);
         }
-
-
     }
 
     private void cleanPath() {
@@ -178,4 +179,12 @@ class Game {
         }
     }
 
+    @Override
+    public void onRecognitionResult(String result) {
+        switch (result) {
+            case "on" : diagonalsAllowed = true; break;
+            case "off" : diagonalsAllowed = false; break;
+            default: System.out.println(result); break;
+        }
+    }
 }

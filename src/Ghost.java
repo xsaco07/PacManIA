@@ -1,12 +1,12 @@
-public class Ghost extends Node {
+class Ghost extends Node {
 
-    public Ghost (int initialPosX, int initialPosY) {
+    Ghost(int initialPosX, int initialPosY) {
         setPosX(initialPosX);
         setPosY(initialPosY);
     }
 
     // The ghosts can moveOverGrid randomly in any direction but a valid one
-    public boolean moveOverGrid(Grid gameGrid) {
+    boolean moveOverGrid(Grid gameGrid) {
         // Get random value between 1 and 4 inclusive
         int valorEntero = (int) Math.floor(Math.random()*(4-1+1)+1);
         switch (valorEntero) {
@@ -19,7 +19,6 @@ public class Ghost extends Node {
     }
 
     private boolean up(Grid gameGrid) {
-//        System.out.println("Up");
         int newPosX = this.getPosX()-1;
         if (isInBounds(gameGrid, newPosX, this.getPosY()) && isNotBlocked(gameGrid, newPosX, this.getPosY())) {
             this.setPosX(newPosX);
@@ -29,7 +28,6 @@ public class Ghost extends Node {
     }
 
     private boolean down(Grid gameGrid) {
-//        System.out.println("down");
         int newPosX = this.getPosX()+1;
         if (isInBounds(gameGrid, newPosX, this.getPosY()) && isNotBlocked(gameGrid, newPosX, this.getPosY())) {
             this.setPosX(newPosX);
@@ -39,7 +37,6 @@ public class Ghost extends Node {
     }
 
     private boolean left(Grid gameGrid) {
-//        System.out.println("left");
         int newPosY = this.getPosY()-1;
         if (isInBounds(gameGrid, this.getPosX(), newPosY) && isNotBlocked(gameGrid, this.getPosX(), newPosY)) {
             this.setPosY(newPosY);

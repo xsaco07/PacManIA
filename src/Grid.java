@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Grid {
+class Grid {
 
     // Any grid must have exactly 5 fruits and ghosts
     private final int FRUITS_COUNT = 5;
@@ -24,7 +24,7 @@ public class Grid {
      * @param width
      * @param height
      */
-    public Grid(int width, int height){
+    Grid(int width, int height){
 
         // Initialize attributes
         this.width = width;
@@ -37,25 +37,26 @@ public class Grid {
 
         // Initialize all cells to Blanks
         this.cells = new Node[height][width];
+        System.out.println(height + " " + width);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) cells[i][j] = new Blank(i, j);
         }
 
         // Spawn the Pacman in a random position
-        int position[] = findFreePosition();
+        int[] position = findFreePosition();
         this.pacManNode = new PacMan(position[0], position[1]);
-        this.put(pacManNode);
+        put(pacManNode);
 
 
         // Spawn ghosts
-        int freePosition[];
+        int[] freePosition;
         for (int i = 0; i < GHOSTS_COUNT; i++) {
             freePosition = findFreePosition();
             put(new Ghost(freePosition[0], freePosition[1]));
         }
 
         // Spawn fruits
-        int pos[];
+        int[] pos;
         for (int i = 0; i < FRUITS_COUNT; i++) {
             pos = findFreePosition();
             put(new Fruit(pos[0], pos[1]));
@@ -69,7 +70,7 @@ public class Grid {
      * @return A random [x,y] free position
      */
     private int[] findFreePosition() {
-        int result[] = new int[2];
+        int[] result = new int[2];
         boolean found = false;
 
         int x, y;
@@ -93,7 +94,7 @@ public class Grid {
      * If the node is fruit, ghost or block adds it to the corresponding list
      * @param node
      */
-    public void put(Node node){
+    private void put(Node node){
         int posX = node.getPosX(), posY = node.getPosY();
         cells[posX][posY] = node;
 

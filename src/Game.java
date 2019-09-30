@@ -1,31 +1,84 @@
 import javafx.util.Pair;
-
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 
-class Game {
+class Game implements Listener {
 
     private int pacManScore;
     private int ghostsScore;
     private Grid gameGrid;
-    private JFrame frame;
     private ArrayList<Fruit> gridFruits;
     private ArrayList<Pair<Integer, Integer>> completePath;
     private ArrayList<Pair<Integer, Integer>> currentPath;
 
-    Game(Grid gameGrid, JFrame frame) {
+    private volatile boolean diagonalsAllowed;
+    private volatile boolean onPause;
+
+    // This is put in a class attributes because couldn't reach it through the JFrame
+    private MyPanel myPanel;
+    private JFrame frame;
+    private int cellSize;
+
+    Game(Grid gameGrid, int cellSize) {
+
         this.gameGrid = gameGrid;
-        this.frame = frame;
+
         completePath = new ArrayList<>();
         currentPath = new ArrayList<>();
         pacManScore = 0;
         ghostsScore = 0;
+
+        diagonalsAllowed = true;
+        onPause = false;
+
+        // Register this class to be able to listen words from user
+        VoiceHelper.getInstance().register(this);
+
+        initializeGUI(this.gameGrid, cellSize);
+    }
+
+    // Initialize JFrame and MyPanel
+    private void initializeGUI(Grid grid, int cellSize) {
+
+        this.cellSize = cellSize;
+
+        frame = new JFrame("PacManIA");
+
+        frame.setBackground(Color.BLACK);
+
+        myPanel = new MyPanel(grid, cellSize);
+        myPanel.setBackground(new Color(0, 0, 47));
+
+        frame.add(myPanel);
+
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        resetUI(grid, cellSize); // call resetUI here to avoid duplicating code
+
+        frame.setVisible(true);
+
+    }
+
+    // Adjusts the window to show the new grid and cellSize
+    // Re-sizes the frame to match the new dimensions
+    // Resets the MyPanel's grid and cellSize attributes
+    private void resetUI(Grid grid, int cellSize){
+        // Update de JPanel's attributes
+        myPanel.setGrid(grid);
+        myPanel.setCellSize(cellSize);
+
+        // Don't know why it's necessary to add this to the frame's height to be displayed properly
+        int EXTRA_HEIGHT = 30;
+
+        // Resize the frame
+        frame.setBounds(200,100, grid.width*cellSize,grid.height*cellSize+EXTRA_HEIGHT);
     }
 
     void play() {
         while (!winnerFound()) {
             findEntirePath();
-            sleep();
+            pause(); // As it is inside a do-while always sleep for 1 second
             movePacMan();
             moveGhosts();
             cleanPath();
@@ -35,13 +88,12 @@ class Game {
         System.out.println("Game over!");
         System.out.println("PacMan score: " + pacManScore);
         System.out.println("Ghost score: " + ghostsScore);
-        if (pacManScore > ghostsScore) System.out.println("PacMan won!");
-        else if (pacManScore < ghostsScore) System.out.println("Ghosts won!");
-        else System.out.println("It's a tie");
+        if (pacManScore > ghostsScore) VoiceHelper.getInstance().say("PacMan has won with" + pacManScore + "points");
+        else if (pacManScore < ghostsScore) VoiceHelper.getInstance().say("Ghosts have won with " + ghostsScore + "points");
+        else VoiceHelper.getInstance().say("It's a tie");
     }
 
     private void movePacMan() {
-        //System.out.println(completePath);
         int pathSize = completePath.size();
         if (pathSize > 0) {
 
@@ -66,6 +118,8 @@ class Game {
 
             gameGrid.cells[prevPosX][prevPosY] = new Blank(prevPosX, prevPosY);
 
+            gameGrid.repaintCells();
+
         }
         else System.out.println("Complete path empty");
 
@@ -88,7 +142,7 @@ class Game {
 
             Fruit closestFruit = getClosestFruit(pacManCopy);
 
-            currentPath = AStar.findPath(gameGrid, pacManCopy, closestFruit);
+            currentPath = AStar.findPath(gameGrid, pacManCopy, closestFruit, diagonalsAllowed);
 
             if (currentPath != null) {
                 paintFinalPath(currentPath);
@@ -119,8 +173,6 @@ class Game {
             if (!(gameGrid.cells[posX][posY] instanceof Fruit) && !(gameGrid.cells[posX][posY] instanceof PacMan))
                 gameGrid.cells[posX][posY] = new PathCell(posX, posY);
         }
-
-
     }
 
     private void cleanPath() {
@@ -162,11 +214,12 @@ class Game {
         for (Ghost ghost : gameGrid.ghostsNodes) {
             int previousPosX = ghost.getPosX(), previousPosY = ghost.getPosY();
 
+            // While the movement is invalid try an other one
             while (!ghost.moveOverGrid(gameGrid)) ghost.moveOverGrid(gameGrid);
 
             int currentPosX = ghost.getPosX(), currentPosY = ghost.getPosY();
 
-            // Node were the ghost is now in after the valid movement
+            // Node were the ghost is after the valid movement
             Node currentGhostPosition = gameGrid.cells[currentPosX][currentPosY];
 
             if (currentGhostPosition instanceof Fruit) {
@@ -178,4 +231,37 @@ class Game {
         }
     }
 
+    private void pause() {
+        do sleep(); while (onPause);
+    }
+
+    @Override
+    public void onRecognitionResult(String result) {
+        switch (result) {
+
+            case "on" : diagonalsAllowed = true; break;
+
+            case "off" : diagonalsAllowed = false; break;
+
+            case "stop" : onPause = true; break;
+
+            case "resume" : onPause = false; break;
+
+            case "restart" : {
+
+                onPause = false;
+                Grid newGrid = new Grid(gameGrid.width, gameGrid.height);
+                this.gameGrid = newGrid;
+
+                // Restart the scores
+                pacManScore = 0;
+                ghostsScore = 0;
+
+                resetUI(newGrid, cellSize);
+                break;
+            }
+
+            default: System.out.println(result);
+        }
+    }
 }

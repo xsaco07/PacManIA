@@ -1,83 +1,11 @@
-import javax.swing.*;
-import java.awt.*;
-
 public class Main{
 
-    private static JFrame frame;
-
-    // This is put in a class attributes because couldn't reach it through the JFrame
-    private static MyPanel myPanel;
-
-
-
     public static void main(String[] args){
-        // Test ask dimension
-        int data[] = UserInput.getInstance().askDimensions();
-        System.out.printf("Main got width:%d height:%d cellsize:%d\n", data[0], data[1], data[2]);
-
-        // Test ask position
-        Grid g = new Grid(data[0],data[1]);
-
-        initializeGUI(g, data[2]);
-
-        VoiceHelper.getInstance().say("Now, please place the pacman");
-        data = UserInput.getInstance().askPosition(g);
-        System.out.printf("Main got row: %d col: %d\n", data[0], data[1]);
-        g.put(new PacMan(data[1], data[0]));
-
-        frame.repaint();
-
-
+        int rows = 11, cols = 11;
+        int cellSize = 60;
+        Grid grid = new Grid(rows, cols);
+        Game game = new Game(grid, cellSize);
+        game.play();
     }
-
-    /**
-     * Initializes the JFrame
-     * @param grid
-     * @param cellSize
-     */
-    private static void initializeGUI(Grid grid, int cellSize) {
-
-        frame = new JFrame("PacManIA");
-
-
-        frame.setBackground(Color.BLACK);
-
-        myPanel = new MyPanel(grid, cellSize);
-
-        frame.add(myPanel);
-
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        resetUI(grid, cellSize); // call resetUI here to avoid duplicating code
-
-        frame.setVisible(true);
-
-        System.out.println("GUI Inited");
-    }
-
-
-    /**
-     * Adjusts the window to show the new grid and cellSize
-     * - Resets the MyPanel's grid and cellsize attributes
-     * - Resizes the frame to match the new dimensions
-     * @param grid The new grid to show
-     * @param cellSize The new cellsize to render the window
-     */
-    private static void resetUI(Grid grid, int cellSize){
-        // Update de JPanel's attributes
-        myPanel.setGrid(grid);
-        myPanel.setCellSize(cellSize);
-
-
-        // Don't know why it's necessary to add this to the frame's height to be displayed properly
-        int EXTRA_HEIGHT = 35;
-
-        // Resize the frame
-        frame.setBounds(200,100, grid.width*cellSize,grid.height*cellSize+EXTRA_HEIGHT);
-
-        System.out.println("UI reset");
-    }
-
-
 
 }

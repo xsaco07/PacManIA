@@ -6,6 +6,7 @@ class AStar {
     private static Grid gameGrid;
     private static final int DIAGONAL_COST = 14;
     private static final int FORWARD_DISTANCE = 10;
+    private static boolean DIAGONALS_ALLOWED = false;
 
     private static ArrayList<Node> generateChildren(Node currentNode) {
 
@@ -31,17 +32,20 @@ class AStar {
 
         // Diagonals
 
-        if (isInBounds(currentNodePosX + 1, currentNodePosY + 1) && isNotBlocked(currentNodePosX + 1, currentNodePosY + 1))
-            children.add(gameGrid.cells[currentNodePosX+1][currentNodePosY+1]);
+        if (DIAGONALS_ALLOWED) {
 
-        if (isInBounds(currentNodePosX + 1, currentNodePosY - 1) && isNotBlocked(currentNodePosX + 1, currentNodePosY - 1))
-            children.add(gameGrid.cells[currentNodePosX+1][currentNodePosY-1]);
+            if (isInBounds(currentNodePosX + 1, currentNodePosY + 1) && isNotBlocked(currentNodePosX + 1, currentNodePosY + 1))
+                children.add(gameGrid.cells[currentNodePosX+1][currentNodePosY+1]);
 
-        if (isInBounds(currentNodePosX - 1, currentNodePosY + 1) && isNotBlocked(currentNodePosX - 1, currentNodePosY + 1))
-            children.add(gameGrid.cells[currentNodePosX-1][currentNodePosY+1]);
+            if (isInBounds(currentNodePosX + 1, currentNodePosY - 1) && isNotBlocked(currentNodePosX + 1, currentNodePosY - 1))
+                children.add(gameGrid.cells[currentNodePosX+1][currentNodePosY-1]);
 
-        if (isInBounds(currentNodePosX - 1, currentNodePosY - 1) && isNotBlocked(currentNodePosX - 1, currentNodePosY - 1))
-            children.add(gameGrid.cells[currentNodePosX-1][currentNodePosY-1]);
+            if (isInBounds(currentNodePosX - 1, currentNodePosY + 1) && isNotBlocked(currentNodePosX - 1, currentNodePosY + 1))
+                children.add(gameGrid.cells[currentNodePosX-1][currentNodePosY+1]);
+
+            if (isInBounds(currentNodePosX - 1, currentNodePosY - 1) && isNotBlocked(currentNodePosX - 1, currentNodePosY - 1))
+                children.add(gameGrid.cells[currentNodePosX-1][currentNodePosY-1]);
+        }
 
         return children;
     }
@@ -65,9 +69,10 @@ class AStar {
         return (distX * DIAGONAL_COST) + (FORWARD_DISTANCE * (distY - distX));
     }
 
-    static ArrayList<Pair<Integer, Integer>> findPath(Grid grid, Node startNode, Node goalNode) {
+    static ArrayList<Pair<Integer, Integer>> findPath(Grid grid, Node startNode, Node goalNode, boolean diagonalsAllowedFlag) {
 
         gameGrid = grid; // Set grid
+        DIAGONALS_ALLOWED = diagonalsAllowedFlag;
 
         PriorityQueue<Node> openNodes = new PriorityQueue<>();
         ArrayList<Node> visitedNodes = new ArrayList<>();
@@ -123,5 +128,4 @@ class AStar {
         Collections.reverse(pathPositions);
         return pathPositions;
     }
-
 }

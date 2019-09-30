@@ -13,11 +13,13 @@ public class VoiceHelper {
     private ArrayList<Listener> clients;
     private Thread recognitionThread;
 
+    // Singleton implementation
     private static VoiceHelper instance;
 
     private boolean isRunning = false;
 
-    public static VoiceHelper getInstance(){
+    // Singleton method
+    static VoiceHelper getInstance(){
         if(instance == null){
             instance = new VoiceHelper();
             System.setProperty("freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");
@@ -30,7 +32,7 @@ public class VoiceHelper {
     }
 
 
-    public void register(Listener listener){
+    void register(Listener listener){
         if( ! isRunning){
             start();
             isRunning = true;
@@ -50,18 +52,13 @@ public class VoiceHelper {
         for(Listener listener : clients){
             listener.onRecognitionResult(result);
         }
-        System.out.println("Message sent to clients");
+        //System.out.println("Message sent to clients");
     }
 
 
 
-    public void start(){
-        recognitionThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                startRecognition();
-            }
-        });
+    private void start(){
+        recognitionThread = new Thread(this::startRecognition);
 
         recognitionThread.start();
     }
@@ -70,7 +67,7 @@ public class VoiceHelper {
 
     public void stop(){
         recognitionThread.stop();
-        System.out.println("Recognition thread stopped");
+        //System.out.println("Recognition thread stopped");
     }
 
 
@@ -85,8 +82,6 @@ public class VoiceHelper {
         configuration.setGrammarName("grammar");
         configuration.setUseGrammar(true);
 
-
-//        configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
         try{
             LiveSpeechRecognizer recognizer = new LiveSpeechRecognizer(configuration);
             for (int i=0 ; i<6 ; i++){
@@ -111,22 +106,22 @@ public class VoiceHelper {
     }
 
 
-    public void say(String text){
-        Voice voice;//Creating object of Voice class
+    void say(String text){
+        Voice voice; //Creating object of Voice class
         voice = VoiceManager.getInstance().getVoice("kevin16");
         if (voice != null) {
             voice.allocate();//Allocating Voice
         }
         try {
-            voice.setRate(120);//Setting the rate of the voice
-            voice.setPitch(100);//Setting the Pitch of the voice
-            voice.setVolume(3);//Setting the volume of the voice
+            assert voice != null;
+            voice.setRate(120); //Setting the rate of the voice
+            voice.setPitch(100); //Setting the Pitch of the voice
+            voice.setVolume(3); //Setting the volume of the voice
             String[] divs = text.split(" ");
             for (String s : divs){
-                voice.speak(s);//Calling speak() method
+                voice.speak(s); //Calling speak() method
 
             }
-
 
         } catch (Exception e1) {
             e1.printStackTrace();

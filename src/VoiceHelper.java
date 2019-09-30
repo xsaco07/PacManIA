@@ -1,6 +1,7 @@
 import com.sun.speech.freetts.Voice;
 import com.sun.speech.freetts.VoiceManager;
 
+import com.sun.speech.freetts.en.us.FeatureProcessors;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.LiveSpeechRecognizer;
 import edu.cmu.sphinx.api.SpeechResult;
@@ -34,8 +35,13 @@ public class VoiceHelper {
             start();
             isRunning = true;
         }
-        clients.add(listener);
-        System.out.println("New client registered");
+        if( ! clients.contains(listener)) {
+            clients.add(listener);
+            System.out.println("New client registered");
+        }
+        else{
+            System.out.println("Already registered client tried to register: "+listener);
+        }
     }
 
 

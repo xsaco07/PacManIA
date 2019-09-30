@@ -11,16 +11,23 @@ public class Main{
 
 
     public static void main(String[] args){
+        // Test ask dimension
+        int data[] = UserInput.getInstance().askDimensions();
+        System.out.printf("Main got width:%d height:%d cellsize:%d\n", data[0], data[1], data[2]);
 
-        int rows = 10, cols = 10;
-        int cellSize = 60;
+        // Test ask position
+        Grid g = new Grid(data[0],data[1]);
 
-        Grid grid = new Grid(rows, cols);
+        initializeGUI(g, data[2]);
 
-        initializeGUI(grid, cellSize);
-        System.out.println(grid.fruitsNodes.size());
-        Game game = new Game(grid, frame);
-        game.play();
+        VoiceHelper.getInstance().say("Now, please place the pacman");
+        data = UserInput.getInstance().askPosition(g);
+        System.out.printf("Main got row: %d col: %d\n", data[0], data[1]);
+        g.put(new PacMan(data[1], data[0]));
+
+        frame.repaint();
+
+
     }
 
     /**

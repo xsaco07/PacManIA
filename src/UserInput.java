@@ -1,4 +1,6 @@
 import com.sun.jdi.VMOutOfMemoryException;
+import com.sun.jdi.VoidValue;
+import com.sun.speech.freetts.Voice;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,6 +11,18 @@ import java.util.HashMap;
 public class UserInput implements Listener {
 
     private static UserInput instance;
+
+    // Constants for the ranges of user input data
+    public static final int MIN_ROWS = 5;
+    public static final int MAX_ROWS = 25;
+
+    public static final int MIN_COLS = 5;
+    public static final int MAX_COLS = 25;
+
+    public static final int MIN_CELLSIZE = 20;
+    public static final int MAX_CELLSIZE = 100;
+
+
 
 
     // Constants for the indexes in the array
@@ -21,8 +35,8 @@ public class UserInput implements Listener {
     private static final int UNKNOWN = -1;
 
     // Valid Bounds for the values that the user can enter
-    private final int MIN_VALUE = 5;
-    private final int MAX_VALUE = 100;
+    private int MIN_VALUE = UNKNOWN;
+    private int MAX_VALUE = UNKNOWN;
 
 
 
@@ -30,9 +44,20 @@ public class UserInput implements Listener {
     private int askingValue;
 
 
+    // What data this class is asking to the user
+    private int DIMENSIONS = 0;
+    private int POSITION = 1;
+
+    private int askingData; // this can be DIMENSIONS or POSITION
+
 
     // The result returned by askDimensions()
     private int dimensions[];
+
+
+    // The result returned by askPosition()
+    private int position[];
+    private int cursor; //used in askPosition()
 
 
     private UserInput(){
@@ -76,6 +101,8 @@ public class UserInput implements Listener {
         array as -> [width, height, cellsize]
      */
     public int[] askDimensions(){
+        // For the onResult method to know where to write
+        askingData = DIMENSIONS;
 
         // Initialize the result to be returned
         dimensions = new int[]{UNKNOWN, UNKNOWN, UNKNOWN};
@@ -88,8 +115,17 @@ public class UserInput implements Listener {
         String valuesNames[] = {"width", "height", "cell size"};
 
         for( String valueName : valuesNames){
+
+            // Set the correct bounds
+            if(valueName.equals("width")){ MIN_VALUE = MIN_COLS; MAX_VALUE = MAX_COLS;}
+            else if(valueName.equals("height")){ MIN_VALUE = MIN_ROWS; MAX_VALUE = MAX_ROWS;}
+            else if(valueName.equals("cell size")){ MIN_VALUE = MIN_CELLSIZE; MAX_VALUE = MAX_CELLSIZE;}
+
             // Ask for the input
-            VoiceHelper.getInstance().say("Please say the desired "+ valueName);
+            VoiceHelper.getInstance().say("Please say the desired "+ valueName
+                    + ". Beetween " + MIN_VALUE + " and " + MAX_VALUE + ".");
+
+            System.out.printf("Asking %s between %d and %d\n", valueName, MIN_VALUE, MAX_VALUE );
 
             // Wait until a valid value is said
             while(dimensions[askingValue] == UNKNOWN){
@@ -106,6 +142,8 @@ public class UserInput implements Listener {
 
         }
 
+        askingData = UNKNOWN;
+        VoiceHelper.getInstance().unregister(this);
         return dimensions;
 
     }
@@ -120,8 +158,18 @@ public class UserInput implements Listener {
 
         // Assert value in bounds
         if(MIN_VALUE <= value && value <= MAX_VALUE){
-            // Put the value in the current value being asked
-            dimensions[askingValue] = value;
+            if(askingData == DIMENSIONS){
+                // Put the value in the current value being asked
+                dimensions[askingValue] = value;
+            }
+            else if(askingData == POSITION){
+                position[cursor] = value;
+
+            }
+            else{
+                System.out.println("Error: asking value unset or invalid");
+            }
+
         }
         else{
             System.out.println("Invalid input");
@@ -129,5 +177,59 @@ public class UserInput implements Listener {
 
         }
 
+    }
+
+
+    /**
+     * Asks the user to say a row and column to locate some character
+     * @param grid needed to verify the user has entered an empty cell
+     * @return A array of int [row,column]
+     */
+    public int[] askPosition(Grid grid){
+        cursor = 0; // Position of current value being asked
+        position = new int[]{UNKNOWN, UNKNOWN};
+        boolean validInputEntered = false;
+        String valuesNames[] = {"row", "column"};
+        askingData = POSITION;
+
+        // Set bounds for the onResult method to validate the result
+        // Asks the row fist so the bound is the height of the grid
+        MIN_VALUE = 0; MAX_VALUE = grid.height-1;
+
+        // Register to get voice recognitions
+        VoiceHelper.getInstance().register(this);
+
+
+        while( ! validInputEntered ) {
+            for (String valueName : valuesNames) {
+                // Ask for the input
+                VoiceHelper.getInstance().say("Please say the desired " + valueName
+                        + ". Beetween " + MIN_VALUE + " and " + MAX_VALUE + ".");
+
+
+
+                // Wait until a valid value is said
+                while (position[cursor] == UNKNOWN) {
+                    try {
+                        System.out.printf("Asking %s between %d and %d\n", valueName, MIN_VALUE, MAX_VALUE );
+                        Thread.sleep(100);
+                    } catch (Exception e) {
+                        System.out.println("Error sleeping while asking user input");
+                        e.printStackTrace();
+                    }
+                }
+                // Move the cursor to the next position
+                cursor += 1;
+
+                System.out.printf("%s set to %d\n", valueName, position[cursor-1]);
+
+
+            }
+            validInputEntered = true;
+        }
+
+        VoiceHelper.getInstance().unregister(this);
+        askingData = UNKNOWN;
+        return position;
     }
 }

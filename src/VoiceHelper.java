@@ -46,6 +46,12 @@ public class VoiceHelper {
         }
     }
 
+    void unregister(Listener listener){
+        if(clients.contains( listener)){
+            clients.remove(listener);
+        }
+    }
+
 
 
     private void spreadResult(String result){
@@ -84,7 +90,7 @@ public class VoiceHelper {
 
         try{
             LiveSpeechRecognizer recognizer = new LiveSpeechRecognizer(configuration);
-            for (int i=0 ; i<6 ; i++){
+            while( isRunning ){
                 // Start recognition process pruning previously cached data.
                 recognizer.startRecognition(true);
 

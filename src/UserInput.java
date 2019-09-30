@@ -1,5 +1,6 @@
 import com.sun.jdi.VMOutOfMemoryException;
 import com.sun.jdi.VoidValue;
+import com.sun.speech.freetts.Voice;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -142,6 +143,7 @@ public class UserInput implements Listener {
         }
 
         askingData = UNKNOWN;
+        VoiceHelper.getInstance().unregister(this);
         return dimensions;
 
     }
@@ -226,6 +228,7 @@ public class UserInput implements Listener {
             validInputEntered = true;
         }
 
+        VoiceHelper.getInstance().unregister(this);
         askingData = UNKNOWN;
         return position;
     }

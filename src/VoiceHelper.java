@@ -98,7 +98,12 @@ public class VoiceHelper {
 
                 System.out.println("Recognizer got \""+result.getHypothesis()+"\"");
 
-                spreadResult(result.getHypothesis());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        spreadResult(result.getHypothesis());
+                    }
+                }).start();
 
                 // Pause recognition process. It can be resumed then with startRecognition(false).
                 recognizer.stopRecognition();

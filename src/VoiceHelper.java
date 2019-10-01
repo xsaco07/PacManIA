@@ -29,17 +29,17 @@ public class VoiceHelper {
 
     private VoiceHelper(){
         clients = new ArrayList<>();
+        start();
     }
 
 
     void register(Listener listener){
         if( ! isRunning){
             start();
-            isRunning = true;
         }
         if( ! clients.contains(listener)) {
             clients.add(listener);
-            System.out.println("New client registered");
+            System.out.println("New client registered:"+listener.getClass().getName());
         }
         else{
             System.out.println("Already registered client tried to register: "+listener);
@@ -49,6 +49,7 @@ public class VoiceHelper {
     void unregister(Listener listener){
         if(clients.contains( listener)){
             clients.remove(listener);
+            System.out.println("Voice helper removed a client");
         }
     }
 
@@ -56,24 +57,26 @@ public class VoiceHelper {
 
     private void spreadResult(String result){
         for(Listener listener : clients){
+            System.out.println("Voice Helper about to send <"+result+" > to " +listener.getClass().getName());
             listener.onRecognitionResult(result);
         }
-        //System.out.println("Message sent to clients");
+        System.out.println("Voice Helper sent <"+result+" >to clients");
     }
 
 
 
     private void start(){
         recognitionThread = new Thread(this::startRecognition);
-
         recognitionThread.start();
+        isRunning = true;
+        System.out.println("Voice Helper started recognition thread");
     }
 
 
 
     public void stop(){
         recognitionThread.stop();
-        //System.out.println("Recognition thread stopped");
+        System.out.println("Recognition thread stopped");
     }
 
 
@@ -91,6 +94,8 @@ public class VoiceHelper {
         try{
             LiveSpeechRecognizer recognizer = new LiveSpeechRecognizer(configuration);
             while( isRunning ){
+                System.out.println("Recognizer alive! ");
+
                 // Start recognition process pruning previously cached data.
                 recognizer.startRecognition(true);
 
@@ -98,11 +103,17 @@ public class VoiceHelper {
 
                 System.out.println("Recognizer got \""+result.getHypothesis()+"\"");
 
-                spreadResult(result.getHypothesis());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        spreadResult(result.getHypothesis());
+                    }
+                }).start();
 
                 // Pause recognition process. It can be resumed then with startRecognition(false).
                 recognizer.stopRecognition();
             }
+            System.out.println("Voice Helper stopped recognition");
         }catch (Exception e){
             System.out.println("Error initializing the recognizer");
             e.printStackTrace();

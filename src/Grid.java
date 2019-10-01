@@ -37,7 +37,7 @@ class Grid {
 
         // Initialize all cells to Blanks
         this.cells = new Node[height][width];
-        System.out.println(height + " " + width);
+        System.out.println("Creating a grid of "+ height + " x " + width);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) cells[i][j] = new Blank(i, j);
         }

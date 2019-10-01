@@ -62,7 +62,7 @@ public class UserInput implements Listener {
 
     private UserInput(){
         initNumMapping();
-        System.out.println(numMapping);
+//        System.out.println(numMapping);
     }
 
     private void initNumMapping() {

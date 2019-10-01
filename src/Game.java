@@ -15,10 +15,11 @@ class Game implements Listener {
     private volatile boolean diagonalsAllowed;
     private volatile boolean onPause;
 
+    private boolean restarting = false;
+
     // This is put in a class attributes because couldn't reach it through the JFrame
     private MyPanel myPanel;
     private JFrame frame;
-    private int cellSize;
 
     Game(Grid gameGrid, int cellSize) {
 
@@ -38,10 +39,23 @@ class Game implements Listener {
         initializeGUI(this.gameGrid, cellSize);
     }
 
+
+    private void restart(Grid grid, int cellSize){
+
+        completePath = new ArrayList<>();
+        currentPath = new ArrayList<>();
+        pacManScore = 0;
+        ghostsScore = 0;
+
+        diagonalsAllowed = true;
+
+        resetUI(grid, cellSize);
+
+    }
+
+
     // Initialize JFrame and MyPanel
     private void initializeGUI(Grid grid, int cellSize) {
-
-        this.cellSize = cellSize;
 
         frame = new JFrame("PacManIA");
 
@@ -68,6 +82,9 @@ class Game implements Listener {
         myPanel.setGrid(grid);
         myPanel.setCellSize(cellSize);
 
+        // Update gameGrid
+        gameGrid = grid;
+
         // Don't know why it's necessary to add this to the frame's height to be displayed properly
         int EXTRA_HEIGHT = 30;
 
@@ -79,6 +96,16 @@ class Game implements Listener {
         while (!winnerFound()) {
             findEntirePath();
             pause(); // As it is inside a do-while always sleep for 1 second
+            if(restarting){
+                int dims[] = UserInput.getInstance().askDimensions();
+//                int dims[] = {10,10,50};
+                // Ask location for pacman and fruits
+                //...
+                Grid newGrid = new Grid(dims[0], dims[1]);
+                restart(newGrid, dims[2]);
+                restarting = false;
+                continue;
+            }
             movePacMan();
             moveGhosts();
             cleanPath();
@@ -248,20 +275,13 @@ class Game implements Listener {
             case "resume" : onPause = false; break;
 
             case "restart" : {
-
+                onPause = true;
+                restarting = true;
                 onPause = false;
-                Grid newGrid = new Grid(gameGrid.width, gameGrid.height);
-                this.gameGrid = newGrid;
-
-                // Restart the scores
-                pacManScore = 0;
-                ghostsScore = 0;
-
-                resetUI(newGrid, cellSize);
                 break;
             }
 
-            default: System.out.println(result);
+            default: System.out.println("Game received: "+result);
         }
     }
 }

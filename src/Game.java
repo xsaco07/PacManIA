@@ -3,7 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-class Game {
+class Game implements Listener {
 
     private int pacManScore;
     private int ghostsScore;
@@ -32,7 +32,7 @@ class Game {
         onPause = false;
 
         // Register this class to be able to listen words from user
-        //VoiceHelper.getInstance().register(this);
+        VoiceHelper.getInstance().register(this);
 
         initializeGUI(this.gameGrid, cellSize);
     }
@@ -239,45 +239,45 @@ class Game {
         do sleep(); while (onPause);
     }
 
-//    @Override
-//    public void onRecognitionResult(String result) {
-//        switch (result) {
-//
-//            case "on" : diagonalsAllowed = true; break;
-//
-//            case "off" : diagonalsAllowed = false; break;
-//
-//            case "stop" : onPause = true; break;
-//
-//            case "resume" : onPause = false; break;
-//
-//            case "restart" : rebuildUI(); break;
-//
-//            default: System.out.println(result);
-//        }
-//    }
+    @Override
+    public void onRecognitionResult(String result) {
+        switch (result) {
 
-//    private void rebuildUI() {
-//        onPause = true;
-//
-//        VoiceHelper.getInstance().unregister(this);
-//
-//        // Ask for the new dimensions
-//        int[] data = UserInput.getInstance().askDimensions();
-//
-//        Grid newGrid = new Grid(data[0], data[1]);
-//        this.gameGrid = newGrid;
-//
-//        // Restart the scores
-//        pacManScore = 0;
-//        ghostsScore = 0;
-//
-//        // Update de GUI
-//        resetUI(newGrid, data[2]);
-//
-//        // Make the game continue
-//        onPause = false;
-//
-//        VoiceHelper.getInstance().register(this);
-//    }
+            case "on" : diagonalsAllowed = true; break;
+
+            case "off" : diagonalsAllowed = false; break;
+
+            case "stop" : onPause = true; break;
+
+            case "resume" : onPause = false; break;
+
+            case "restart" : rebuildUI(); break;
+
+            default: System.out.println(result);
+        }
+    }
+
+    private void rebuildUI() {
+        onPause = true;
+
+        VoiceHelper.getInstance().unregister(this);
+
+        // Ask for the new dimensions
+        int[] data = UserInput.getInstance().askDimensions();
+
+        Grid newGrid = new Grid(data[0], data[1]);
+        this.gameGrid = newGrid;
+
+        // Restart the scores
+        pacManScore = 0;
+        ghostsScore = 0;
+
+        // Update de GUI
+        resetUI(newGrid, data[2]);
+
+        // Make the game continue
+        onPause = false;
+
+        VoiceHelper.getInstance().register(this);
+    }
 }

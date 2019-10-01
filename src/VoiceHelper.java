@@ -125,7 +125,7 @@ public class VoiceHelper {
         }
         try {
             assert voice != null;
-            voice.setRate(120); //Setting the rate of the voice
+            voice.setRate(175); //Setting the rate of the voice
             voice.setPitch(100); //Setting the Pitch of the voice
             voice.setVolume(3); //Setting the volume of the voice
             String[] divs = text.split(" ");

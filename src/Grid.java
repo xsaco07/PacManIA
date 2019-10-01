@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 class Grid {
@@ -35,18 +36,25 @@ class Grid {
         this.blocksNodes = new ArrayList<>();
 
 
-        // Initialize all cells to Blanks
         this.cells = new Node[height][width];
-        System.out.println(height + " " + width);
+
+        // Initialize all cells to Blanks
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) cells[i][j] = new Blank(i, j);
+        }
+
+        // Spawn blocks
+        int[] blockPositions;
+        int blockCount = (this.width * this.height) / 5;
+        for (int i = 0; i < blockCount; i++) {
+            blockPositions = findFreePosition();
+            put(new Block(blockPositions[0], blockPositions[1]));
         }
 
         // Spawn the Pacman in a random position
         int[] position = findFreePosition();
         this.pacManNode = new PacMan(position[0], position[1]);
         put(pacManNode);
-
 
         // Spawn ghosts
         int[] freePosition;
@@ -79,7 +87,7 @@ class Grid {
             x = rand.nextInt(width);
             y = rand.nextInt(height);
 
-            if(cells[y][x] instanceof Blank){
+            if(cells[x][y] instanceof Blank){
                 result[0] = x;
                 result[1] = y;
                 found = true;
@@ -108,7 +116,7 @@ class Grid {
      * This is called to make the cells match the data on the lists
      * Because
      */
-    public void repaintCells() {
+    void repaintCells() {
         // Paint pacMan
         cells[pacManNode.getPosX()][pacManNode.getPosY()] = pacManNode;
         // Paint ghosts

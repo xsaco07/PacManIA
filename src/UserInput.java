@@ -22,16 +22,13 @@ public class UserInput implements Listener {
     public static final int MIN_CELLSIZE = 20;
     public static final int MAX_CELLSIZE = 100;
 
-
-
-
     // Constants for the indexes in the array
     public static final int WIDTH = 0;
     public static final int HEIGHT= 1;
     public static final int CELLSIZE = 2;
 
 
-//     For knowing which value hasn't been entered correctly
+    // For knowing which value hasn't been entered correctly
     private static final int UNKNOWN = -1;
 
     // Valid Bounds for the values that the user can enter
@@ -52,11 +49,11 @@ public class UserInput implements Listener {
 
 
     // The result returned by askDimensions()
-    private int dimensions[];
+    private int[] dimensions;
 
 
     // The result returned by askPosition()
-    private int position[];
+    private int[] position;
     private int cursor; //used in askPosition()
 
 
@@ -107,23 +104,34 @@ public class UserInput implements Listener {
         // Initialize the result to be returned
         dimensions = new int[]{UNKNOWN, UNKNOWN, UNKNOWN};
 
-        // Register to get voice recognitions
-        VoiceHelper.getInstance().register(this);
-
         // Set the cursor to the first position
         askingValue = WIDTH;
-        String valuesNames[] = {"width", "height", "cell size"};
+        String[] valuesNames = {"width", "height", "cell size"};
 
         for( String valueName : valuesNames){
 
             // Set the correct bounds
-            if(valueName.equals("width")){ MIN_VALUE = MIN_COLS; MAX_VALUE = MAX_COLS;}
-            else if(valueName.equals("height")){ MIN_VALUE = MIN_ROWS; MAX_VALUE = MAX_ROWS;}
-            else if(valueName.equals("cell size")){ MIN_VALUE = MIN_CELLSIZE; MAX_VALUE = MAX_CELLSIZE;}
+            switch (valueName) {
+                case "width":
+                    MIN_VALUE = MIN_COLS;
+                    MAX_VALUE = MAX_COLS;
+                    break;
+                case "height":
+                    MIN_VALUE = MIN_ROWS;
+                    MAX_VALUE = MAX_ROWS;
+                    break;
+                case "cell size":
+                    MIN_VALUE = MIN_CELLSIZE;
+                    MAX_VALUE = MAX_CELLSIZE;
+                    break;
+            }
 
             // Ask for the input
             VoiceHelper.getInstance().say("Please say the desired "+ valueName
                     + ". Beetween " + MIN_VALUE + " and " + MAX_VALUE + ".");
+
+            // Register to get voice recognitions
+            VoiceHelper.getInstance().register(this);
 
             System.out.printf("Asking %s between %d and %d\n", valueName, MIN_VALUE, MAX_VALUE );
 
@@ -137,13 +145,14 @@ public class UserInput implements Listener {
                 }
             }
 
+            VoiceHelper.getInstance().unregister(this);
+
             // Move the cursor to the next position
             askingValue += 1;
 
         }
 
         askingData = UNKNOWN;
-        VoiceHelper.getInstance().unregister(this);
         return dimensions;
 
     }
@@ -189,16 +198,12 @@ public class UserInput implements Listener {
         cursor = 0; // Position of current value being asked
         position = new int[]{UNKNOWN, UNKNOWN};
         boolean validInputEntered = false;
-        String valuesNames[] = {"row", "column"};
+        String[] valuesNames = {"row", "column"};
         askingData = POSITION;
 
         // Set bounds for the onResult method to validate the result
         // Asks the row fist so the bound is the height of the grid
         MIN_VALUE = 0; MAX_VALUE = grid.height-1;
-
-        // Register to get voice recognitions
-        VoiceHelper.getInstance().register(this);
-
 
         while( ! validInputEntered ) {
             for (String valueName : valuesNames) {
@@ -206,7 +211,8 @@ public class UserInput implements Listener {
                 VoiceHelper.getInstance().say("Please say the desired " + valueName
                         + ". Beetween " + MIN_VALUE + " and " + MAX_VALUE + ".");
 
-
+                // Register to get voice recognitions
+                VoiceHelper.getInstance().register(this);
 
                 // Wait until a valid value is said
                 while (position[cursor] == UNKNOWN) {
@@ -218,17 +224,18 @@ public class UserInput implements Listener {
                         e.printStackTrace();
                     }
                 }
+
+                VoiceHelper.getInstance().unregister(this);
+
                 // Move the cursor to the next position
                 cursor += 1;
 
                 System.out.printf("%s set to %d\n", valueName, position[cursor-1]);
 
-
             }
             validInputEntered = true;
         }
 
-        VoiceHelper.getInstance().unregister(this);
         askingData = UNKNOWN;
         return position;
     }

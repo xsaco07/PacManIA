@@ -3,7 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-class Game implements Listener {
+class Game {
 
     private int pacManScore;
     private int ghostsScore;
@@ -18,7 +18,6 @@ class Game implements Listener {
     // This is put in a class attributes because couldn't reach it through the JFrame
     private MyPanel myPanel;
     private JFrame frame;
-    private int cellSize;
 
     Game(Grid gameGrid, int cellSize) {
 
@@ -33,15 +32,13 @@ class Game implements Listener {
         onPause = false;
 
         // Register this class to be able to listen words from user
-        VoiceHelper.getInstance().register(this);
+        //VoiceHelper.getInstance().register(this);
 
         initializeGUI(this.gameGrid, cellSize);
     }
 
     // Initialize JFrame and MyPanel
     private void initializeGUI(Grid grid, int cellSize) {
-
-        this.cellSize = cellSize;
 
         frame = new JFrame("PacManIA");
 
@@ -215,7 +212,10 @@ class Game implements Listener {
             int previousPosX = ghost.getPosX(), previousPosY = ghost.getPosY();
 
             // While the movement is invalid try an other one
-            while (!ghost.moveOverGrid(gameGrid)) ghost.moveOverGrid(gameGrid);
+            while (!ghost.moveOverGrid(gameGrid)) {
+                System.out.println("Loop");
+                ghost.moveOverGrid(gameGrid);
+            }
 
             int currentPosX = ghost.getPosX(), currentPosY = ghost.getPosY();
 
@@ -235,44 +235,45 @@ class Game implements Listener {
         do sleep(); while (onPause);
     }
 
-    @Override
-    public void onRecognitionResult(String result) {
-        switch (result) {
+//    @Override
+//    public void onRecognitionResult(String result) {
+//        switch (result) {
+//
+//            case "on" : diagonalsAllowed = true; break;
+//
+//            case "off" : diagonalsAllowed = false; break;
+//
+//            case "stop" : onPause = true; break;
+//
+//            case "resume" : onPause = false; break;
+//
+//            case "restart" : rebuildUI(); break;
+//
+//            default: System.out.println(result);
+//        }
+//    }
 
-            case "on" : diagonalsAllowed = true; break;
-
-            case "off" : diagonalsAllowed = false; break;
-
-            case "stop" : onPause = true; break;
-
-            case "resume" : onPause = false; break;
-
-            case "restart" : {
-
-                onPause = true;
-
-                // Ask for the new dimensions
-                int data[] = UserInput.getInstance().askDimensions();
-
-                // Ask for the new location
-
-                Grid newGrid = new Grid(data[0], data[1]);
-                this.gameGrid = newGrid;
-
-                // Restart the scores
-                pacManScore = 0;
-                ghostsScore = 0;
-
-                // Update de GUI
-                resetUI(newGrid, data[2]);
-
-                // Make the game continue
-                onPause = false;
-
-                break;
-            }
-
-            default: System.out.println(result);
-        }
-    }
+//    private void rebuildUI() {
+//        onPause = true;
+//
+//        VoiceHelper.getInstance().unregister(this);
+//
+//        // Ask for the new dimensions
+//        int[] data = UserInput.getInstance().askDimensions();
+//
+//        Grid newGrid = new Grid(data[0], data[1]);
+//        this.gameGrid = newGrid;
+//
+//        // Restart the scores
+//        pacManScore = 0;
+//        ghostsScore = 0;
+//
+//        // Update de GUI
+//        resetUI(newGrid, data[2]);
+//
+//        // Make the game continue
+//        onPause = false;
+//
+//        VoiceHelper.getInstance().register(this);
+//    }
 }

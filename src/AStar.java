@@ -80,7 +80,6 @@ class AStar {
         openNodes.add(startNode);
 
         while(openNodes.size() > 0) {
-
             Node current = openNodes.poll(); // Get the node with the smallest F cost
             visitedNodes.add(current);
 

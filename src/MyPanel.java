@@ -21,8 +21,8 @@ public class MyPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-        for (int row = 0; row < grid.height; row++){
-            for (int col = 0; col < grid.width; col++) {
+        for (int row = 0; row < grid.width; row++){
+            for (int col = 0; col < grid.height; col++) {
 
                 String imageName = grid.cells[row][col].getClass().getName();
                 BufferedImage image = Images.getImageFor(imageName);

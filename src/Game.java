@@ -214,7 +214,7 @@ class Game {
             boolean ghostMoved = false;
 
             // While the movement is invalid try an other one
-            int attempts = 4;
+            int attempts = 10;
             while(0 < attempts && ! ghostMoved){
                 ghostMoved = ghost.moveOverGrid(gameGrid);
                 attempts--;

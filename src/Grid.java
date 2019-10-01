@@ -36,11 +36,11 @@ class Grid {
         this.blocksNodes = new ArrayList<>();
 
 
-        this.cells = new Node[height][width];
+        this.cells = new Node[width][height];
 
         // Initialize all cells to Blanks
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) cells[i][j] = new Blank(i, j);
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) cells[i][j] = new Blank(i, j);
         }
 
         // Spawn blocks

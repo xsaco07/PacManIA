@@ -211,10 +211,13 @@ class Game {
         for (Ghost ghost : gameGrid.ghostsNodes) {
             int previousPosX = ghost.getPosX(), previousPosY = ghost.getPosY();
 
+            boolean ghostMoved = false;
+
             // While the movement is invalid try an other one
-            while (!ghost.moveOverGrid(gameGrid)) {
-                System.out.println("Loop");
-                ghost.moveOverGrid(gameGrid);
+            int attempts = 4;
+            while(0 < attempts && ! ghostMoved){
+                ghostMoved = ghost.moveOverGrid(gameGrid);
+                attempts--;
             }
 
             int currentPosX = ghost.getPosX(), currentPosY = ghost.getPosY();
@@ -226,8 +229,9 @@ class Game {
                 ghostsScore++;
                 gameGrid.fruitsNodes.remove(currentGhostPosition);
             }
-
-            gameGrid.cells[previousPosX][previousPosY] = new Blank(previousPosX, previousPosY);
+            if(ghostMoved){
+                gameGrid.cells[previousPosX][previousPosY] = new Blank(previousPosX, previousPosY);
+            }
         }
     }
 

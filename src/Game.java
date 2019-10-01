@@ -249,15 +249,26 @@ class Game implements Listener {
 
             case "restart" : {
 
-                onPause = false;
-                Grid newGrid = new Grid(gameGrid.width, gameGrid.height);
+                onPause = true;
+
+                // Ask for the new dimensions
+                int data[] = UserInput.getInstance().askDimensions();
+
+                // Ask for the new location
+
+                Grid newGrid = new Grid(data[0], data[1]);
                 this.gameGrid = newGrid;
 
                 // Restart the scores
                 pacManScore = 0;
                 ghostsScore = 0;
 
-                resetUI(newGrid, cellSize);
+                // Update de GUI
+                resetUI(newGrid, data[2]);
+
+                // Make the game continue
+                onPause = false;
+
                 break;
             }
 
